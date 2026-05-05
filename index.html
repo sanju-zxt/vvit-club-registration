@@ -5,1016 +5,463 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VVIT Club Registration</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
             --neon-green: #00ff88;
             --neon-blue: #00d4ff;
-            --neon-purple: #b829dd;
             --dark-bg: #0a0e1a;
-            --card-bg: rgba(16, 24, 48, 0.8);
-            --glass: rgba(255, 255, 255, 0.03);
-            --border-glow: rgba(0, 255, 136, 0.2);
+            --card-bg: rgba(16, 24, 48, 0.9);
         }
-
+        
         body {
             font-family: 'Inter', sans-serif;
             background: var(--dark-bg);
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            color: white;
         }
-
-        /* Animated Background */
+        
         .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(0,255,136,0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0,212,255,0.08) 0%, transparent 50%);
             z-index: 0;
-            overflow: hidden;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(184, 41, 221, 0.05) 0%, transparent 60%);
             animation: bgPulse 8s ease-in-out infinite;
         }
-
+        
         @keyframes bgPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(2deg); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
-
-        /* Floating Particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--neon-green);
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: float 15s infinite;
-            box-shadow: 0 0 10px var(--neon-green);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
-        }
-
-        /* Grid Lines */
-        .grid-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-        }
-
+        
         .container {
-            position: relative;
-            z-index: 10;
-            max-width: 900px;
-            width: 100%;
-            margin: 40px auto;
-            padding: 0 20px;
+            position: relative; z-index: 10;
+            max-width: 900px; margin: 0 auto; padding: 20px;
         }
-
-        /* Header */
+        
         .header {
-            text-align: center;
-            padding: 50px 30px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 20px;
-            margin-bottom: 30px;
+            text-align: center; padding: 40px 20px;
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 0 40px rgba(0, 255, 136, 0.1);
+            border-radius: 20px; margin-bottom: 30px;
+            border: 1px solid rgba(0,255,136,0.2);
+            box-shadow: 0 0 40px rgba(0,255,136,0.1);
         }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-green), var(--neon-blue), transparent);
-            animation: scanline 3s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
+        
         .header h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.2em;
-            font-weight: 700;
+            font-size: 1.8em;
             background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
-            text-transform: uppercase;
         }
-
+        
         .header .subtitle {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3em;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-            letter-spacing: 4px;
-            text-transform: uppercase;
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 3px;
         }
-
+        
         .header .location {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1em;
             color: var(--neon-green);
             margin-top: 10px;
-            letter-spacing: 3px;
-            opacity: 0.8;
-        }
-
-        .header .badge {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 8px 20px;
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid var(--neon-green);
-            border-radius: 30px;
-            color: var(--neon-green);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8em;
+            font-family: 'Rajdhani', sans-serif;
             letter-spacing: 2px;
-            animation: badgePulse 2s ease-in-out infinite;
         }
-
-        @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 136, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
-        }
-
-        /* Progress Bar */
+        
         .progress-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 30px 40px;
+            display: flex; justify-content: space-between;
+            padding: 25px 40px; background: var(--card-bg);
+            border-radius: 15px; margin-bottom: 30px;
+            border: 1px solid rgba(0,255,136,0.1);
             position: relative;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-glow);
         }
-
+        
         .progress-bar::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 60px;
-            right: 60px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: 0;
+            content: ''; position: absolute; top: 50%; left: 60px; right: 60px;
+            height: 2px; background: rgba(255,255,255,0.1);
         }
-
+        
         .progress-fill {
-            position: absolute;
-            top: 50%;
-            left: 60px;
-            height: 2px;
+            position: absolute; top: 50%; left: 60px; height: 2px;
             background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            z-index: 1;
             transition: width 0.5s ease;
             width: 0%;
-            box-shadow: 0 0 10px var(--neon-green);
         }
-
+        
         .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; z-index: 2; cursor: pointer;
         }
-
+        
         .step-circle {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9em;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.1);
+            font-family: 'Orbitron', sans-serif; font-size: 0.85em;
         }
-
+        
         .step.active .step-circle {
-            background: rgba(0, 255, 136, 0.2);
-            color: var(--neon-green);
+            background: rgba(0,255,136,0.2); color: var(--neon-green);
             border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0,255,136,0.4);
         }
-
+        
         .step.completed .step-circle {
-            background: rgba(0, 255, 136, 0.3);
-            color: var(--neon-green);
+            background: rgba(0,255,136,0.3); color: var(--neon-green);
             border-color: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
-
+        
         .step-label {
-            margin-top: 10px;
-            font-size: 0.75em;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            margin-top: 8px; font-size: 0.75em;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600; text-transform: uppercase;
         }
-
-        .step.active .step-label {
-            color: var(--neon-green);
-        }
-
-        /* Form Container */
+        
+        .step.active .step-label { color: var(--neon-green); }
+        
         .form-container {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+            border-radius: 20px; padding: 40px;
+            border: 1px solid rgba(0,255,136,0.1);
         }
-
-        .form-section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
+        
+        .form-section { display: none; animation: fadeIn 0.5s ease; }
+        .form-section.active { display: block; }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         .form-section h2 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.5em;
             color: var(--neon-green);
             margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            position: relative;
             padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0,255,136,0.3);
         }
-
-        .form-section h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            border-radius: 2px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
+        
+        .form-group { margin-bottom: 25px; }
+        
         label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-family: 'Rajdhani', sans-serif;
+            display: block; margin-bottom: 8px;
+            font-weight: 600; color: rgba(255,255,255,0.8);
+            font-size: 0.9em; text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;
         }
-
-        .required::after {
-            content: ' *';
-            color: var(--neon-green);
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="date"],
-        input[type="number"],
-        input[type="password"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            font-size: 1em;
-            color: white;
+        
+        .required::after { content: ' *'; color: var(--neon-green); }
+        
+        input, select, textarea {
+            width: 100%; padding: 14px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; font-size: 1em; color: white;
             transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
         }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+        
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.3); }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0,255,136,0.15);
         }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        input.error,
-        select.error,
-        textarea.error {
+        
+        input.error, select.error, textarea.error {
             border-color: #ff4757;
-            box-shadow: 0 0 20px rgba(255, 71, 87, 0.15);
+            box-shadow: 0 0 20px rgba(255,71,87,0.15);
         }
-
+        
         .error-message {
-            color: #ff4757;
-            font-size: 0.85em;
-            margin-top: 8px;
-            display: none;
+            color: #ff4757; font-size: 0.85em;
+            margin-top: 8px; display: none;
             font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
         }
-
-        .error-message.show {
-            display: block;
+        .error-message.show { display: block; }
+        
+        .radio-group, .checkbox-group {
+            display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px;
         }
-
-        /* Radio & Checkbox Groups */
-        .radio-group,
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .radio-item,
-        .checkbox-item {
-            display: flex;
-            align-items: center;
+        
+        .radio-item, .checkbox-item {
             padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            cursor: pointer;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer;
             transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
+            color: rgba(255,255,255,0.7);
         }
-
-        .radio-item:hover,
-        .checkbox-item:hover {
+        
+        .radio-item:hover, .checkbox-item:hover {
             border-color: var(--neon-green);
-            background: rgba(0, 255, 136, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.1);
+            background: rgba(0,255,136,0.05);
         }
-
-        .radio-item.selected,
-        .checkbox-item.selected {
+        
+        .radio-item.selected, .checkbox-item.selected {
             border-color: var(--neon-green);
-            background: rgba(0, 255, 136, 0.1);
+            background: rgba(0,255,136,0.1);
             color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
         }
-
-        /* Club Sections */
+        
         .club-section {
             margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.02);
+            border-radius: 15px; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
         }
-
-        .club-section:hover {
-            border-color: rgba(0, 255, 136, 0.2);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.05);
-        }
-
+        
+        .club-section:hover { border-color: rgba(0,255,136,0.2); }
         .club-section.selected-club {
             border-color: var(--neon-green);
-            background: rgba(0, 255, 136, 0.05);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+            background: rgba(0,255,136,0.05);
         }
-
-        .club-header {
-            display: flex;
-            align-items: center;
-        }
-
-        .club-icon {
-            font-size: 2.5em;
-            margin-right: 20px;
-            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.3));
-        }
-
-        .club-title-group {
-            flex: 1;
-        }
-
+        
+        .club-header { display: flex; align-items: center; }
+        .club-icon { font-size: 2.2em; margin-right: 15px; }
+        
         .club-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2em;
-            color: white;
-            letter-spacing: 1px;
+            font-size: 1.1em; color: white;
         }
-
+        
         .club-tagline {
-            font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 5px;
+            font-size: 0.85em; color: rgba(255,255,255,0.5);
         }
-
+        
         .club-select-btn {
-            padding: 10px 25px;
+            padding: 8px 20px;
             background: transparent;
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
             border-radius: 8px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-size: 0.75em; font-weight: 600;
+            cursor: pointer; margin-left: auto;
         }
-
-        .club-select-btn:hover {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-        }
-
+        
         .club-select-btn.selected {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            background: var(--neon-green); color: var(--dark-bg);
         }
-
-        /* Activity Tags */
-        .activities-list {
-            display: none;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .activities-list.show {
-            display: block;
-        }
-
+        
+        .activities-list { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .activities-list.show { display: block; }
+        
         .activity-tag {
-            display: inline-block;
-            padding: 8px 18px;
-            margin: 5px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.7);
+            display: inline-block; padding: 6px 14px; margin: 4px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; font-size: 0.85em;
+            cursor: pointer; color: rgba(255,255,255,0.7);
         }
-
-        .activity-tag:hover {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
+        
         .activity-tag.selected {
             border-color: var(--neon-blue);
-            background: rgba(0, 212, 255, 0.15);
+            background: rgba(0,212,255,0.15);
             color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
-
-        .activity-tag input {
-            display: none;
-        }
-
-        /* Textarea */
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
+        
+        .activity-tag input { display: none; }
+        
+        textarea { resize: vertical; min-height: 120px; }
+        
         .char-count {
-            text-align: right;
-            font-size: 0.8em;
-            color: rgba(255, 255, 255, 0.4);
+            text-align: right; font-size: 0.8em;
+            color: rgba(255,255,255,0.4);
             margin-top: 8px;
-            font-family: 'Rajdhani', sans-serif;
         }
-
-        /* Buttons */
+        
         .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            gap: 15px;
+            display: flex; justify-content: space-between;
+            margin-top: 40px; gap: 15px;
         }
-
+        
         button {
-            padding: 14px 32px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
+            padding: 14px 32px; border: none;
+            border-radius: 10px; font-size: 1em;
+            font-weight: 600; cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            letter-spacing: 2px; text-transform: uppercase;
         }
-
+        
         .btn-prev {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .btn-prev:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-next,
-        .btn-submit {
+        
+        .btn-next, .btn-submit {
             background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
             color: var(--dark-bg);
-            flex: 1;
-            max-width: 220px;
-            font-weight: 700;
+            flex: 1; max-width: 200px;
         }
-
-        .btn-next:hover,
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            max-width: 100%;
-        }
-
-        /* Summary Cards */
+        
+        .btn-submit { max-width: 100%; }
+        
         .summary-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 15px; padding: 25px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-
+        
         .summary-card h3 {
             font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            font-size: 1em;
-            letter-spacing: 2px;
+            color: var(--neon-green); margin-bottom: 20px;
         }
-
+        
         .summary-item {
-            display: flex;
-            justify-content: space-between;
+            display: flex; justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
-        .summary-item:last-child {
-            border-bottom: none;
-        }
-
-        .summary-label {
-            font-weight: 600;
-            color: var(--neon-green);
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
-        }
-
-        .summary-value {
-            color: rgba(255, 255, 255, 0.8);
-            text-align: right;
-            max-width: 60%;
-        }
-
-        /* Success Screen */
-        .success-screen {
-            display: none;
-            text-align: center;
-            padding: 60px 40px;
-        }
-
-        .success-screen.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .success-icon {
-            font-size: 5em;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.5));
-        }
-
+        
+        .summary-label { color: var(--neon-green); font-weight: 600; }
+        .summary-value { color: rgba(255,255,255,0.8); }
+        
+        .success-screen { display: none; text-align: center; padding: 60px 40px; }
+        .success-screen.active { display: block; }
+        .success-icon { font-size: 5em; margin-bottom: 20px; }
+        
         .success-screen h2 {
             font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            font-size: 2em;
-            margin-bottom: 15px;
-            letter-spacing: 3px;
+            color: var(--neon-green); font-size: 2em;
         }
-
-        .success-screen p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1em;
-            margin-bottom: 30px;
-        }
-
+        
         .success-details {
-            background: rgba(0, 255, 136, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: left;
-            border: 1px solid var(--border-glow);
+            background: rgba(0,255,136,0.05);
+            border-radius: 15px; padding: 25px;
+            margin: 30px 0; text-align: left;
+            border: 1px solid rgba(0,255,136,0.2);
         }
-
-        .success-details h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .success-details p {
-            margin-bottom: 12px;
-            font-size: 1em;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .success-details p strong {
-            color: var(--neon-green);
-        }
-
+        
+        .success-details h3 { color: var(--neon-green); margin-bottom: 15px; }
+        .success-details p { margin-bottom: 10px; color: rgba(255,255,255,0.8); }
+        
         .btn-reset {
             background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            color: var(--dark-bg);
-            padding: 14px 40px;
-            font-weight: 700;
+            color: var(--dark-bg); padding: 14px 40px;
         }
-
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
-        }
-
-        /* Loading Overlay */
+        
         .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10, 14, 26, 0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10,14,26,0.95);
+            z-index: 1000; justify-content: center;
+            align-items: center; flex-direction: column;
         }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
+        
+        .loading-overlay.active { display: flex; }
+        
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(0, 255, 136, 0.1);
+            width: 50px; height: 50px;
+            border: 3px solid rgba(0,255,136,0.1);
             border-top-color: var(--neon-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         .loading-text {
             color: var(--neon-green);
             font-family: 'Orbitron', sans-serif;
-            font-weight: 600;
-            font-size: 1.1em;
             letter-spacing: 3px;
-            animation: textPulse 1.5s ease-in-out infinite;
         }
-
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* Password Gate */
+        
         .password-gate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--dark-bg);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--dark-bg); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        .password-gate.hidden {
-            display: none;
-        }
-
+        
+        .password-gate.hidden { display: none; }
+        
         .gate-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 50px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 0 60px rgba(0, 255, 136, 0.1);
-            position: relative;
-            overflow: hidden;
+            background: var(--card-bg); border-radius: 20px;
+            padding: 50px; max-width: 450px; width: 100%;
+            text-align: center; border: 1px solid rgba(0,255,136,0.2);
         }
-
-        .gate-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-green), var(--neon-blue), transparent);
-            animation: scanline 3s linear infinite;
-        }
-
+        
         .gate-card h2 {
             font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            margin-bottom: 10px;
-            font-size: 1.5em;
-            letter-spacing: 2px;
+            color: var(--neon-green); margin-bottom: 20px;
         }
-
-        .gate-card p {
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 30px;
-            font-size: 0.95em;
-        }
-
+        
         .gate-input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            font-size: 1.2em;
-            text-align: center;
-            letter-spacing: 5px;
-            margin-bottom: 20px;
-            color: white;
-            font-family: 'Orbitron', sans-serif;
+            width: 100%; padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: white;
+            font-size: 1.2em; text-align: center;
+            letter-spacing: 5px; margin-bottom: 20px;
         }
-
-        .gate-input:focus {
-            outline: none;
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-        }
-
-        .gate-error {
-            color: #ff4757;
-            font-size: 0.9em;
-            margin-bottom: 20px;
-            display: none;
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
-        }
-
-        .gate-error.show {
-            display: block;
-        }
-
+        
+        .gate-input:focus { outline: none; border-color: var(--neon-green); }
+        
+        .gate-error { color: #ff4757; display: none; margin-bottom: 15px; }
+        .gate-error.show { display: block; }
+        
         .btn-gate {
-            width: 100%;
-            padding: 15px;
+            width: 100%; padding: 15px;
             background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            color: var(--dark-bg);
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            color: var(--dark-bg); border: none;
+            border-radius: 10px; font-family: 'Orbitron', sans-serif;
+            font-weight: 700; cursor: pointer;
         }
-
-        .btn-gate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
-        }
-
-        .hint-text {
-            margin-top: 25px;
-            font-size: 0.8em;
-            color: rgba(255, 255, 255, 0.3);
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
-        }
-
-        /* Notice Box */
+        
         .min-clubs-notice {
-            background: rgba(0, 255, 136, 0.05);
-            border: 1px solid var(--border-glow);
+            background: rgba(0,255,136,0.05);
+            border: 1px solid rgba(0,255,136,0.2);
             color: var(--neon-green);
-            padding: 15px 20px;
-            border-radius: 10px;
+            padding: 15px; border-radius: 10px;
             margin-bottom: 25px;
-            font-size: 0.9em;
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
         }
-
-        /* Glitch Effect on Header */
-        .glitch {
-            position: relative;
-            animation: glitch 3s infinite;
-        }
-
-        @keyframes glitch {
-            0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
-            50% { text-shadow: -2px 0 10px rgba(0, 255, 136, 0.5), 2px 0 10px rgba(0, 212, 255, 0.5); }
-        }
-
-        /* Responsive */
+        
         @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.4em;
-            }
-            
-            .form-container {
-                padding: 25px;
-            }
-            
-            .club-header {
-                flex-wrap: wrap;
-            }
-            
-            .radio-group,
-            .checkbox-group {
-                flex-direction: column;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            .btn-next,
-            .btn-submit {
-                max-width: 100%;
-            }
-
-            .gate-card {
-                padding: 30px 20px;
-            }
-
-            .step-label {
-                font-size: 0.6em;
-            }
+            .header h1 { font-size: 1.2em; }
+            .form-container { padding: 20px; }
+            .button-group { flex-direction: column; }
+            .btn-next, .btn-submit { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<!-- Background Effects -->
 <div class="bg-animation"></div>
-<div class="grid-lines"></div>
-<div class="particles" id="particles"></div>
 
-<!-- Password Gate -->
 <div class="password-gate" id="passwordGate">
     <div class="gate-card">
-        <h2>VVIT Club Registration</h2>
-        <p>Authorized access only. Enter the council password to proceed.</p>
+        <h2>VVIT CLUB ACCESS</h2>
+        <p>Enter council credentials to proceed</p>
         <input type="password" class="gate-input" id="gatePassword" placeholder="••••••••••" onkeypress="if(event.key==='Enter')checkPassword()">
-        <div class="gate-error" id="gateError">Access Denied. Invalid credentials.</div>
-        <button class="btn-gate" onclick="checkPassword()">Initialize</button>
-        <div class="hint-text">Contact Student Council for access credentials</div>
+        <div class="gate-error" id="gateError">ACCESS DENIED</div>
+        <button class="btn-gate" onclick="checkPassword()">AUTHENTICATE</button>
     </div>
 </div>
 
 <div class="container" id="mainContainer" style="display: none;">
     <div class="header">
-        <h1 class="glitch">VIJAYA VITTALA INSTITUTE OF TECHNOLOGY</h1>
-        <div class="subtitle">Club Registration Portal</div>
+        <h1>VIJAYA VITTALA INSTITUTE OF TECHNOLOGY</h1>
+        <div class="subtitle">CLUB REGISTRATION PORTAL</div>
         <div class="location">BENGALURU - 77</div>
-        <div class="badge">SECURE ACCESS GRANTED</div>
     </div>
 
     <div class="progress-bar" id="progressBar">
         <div class="progress-fill" id="progressFill"></div>
-        <div class="step active" data-step="1">
-            <div class="step-circle">1</div>
-            <div class="step-label">Identity</div>
-        </div>
-        <div class="step" data-step="2">
-            <div class="step-circle">2</div>
-            <div class="step-label">Academic</div>
-        </div>
-        <div class="step" data-step="3">
-            <div class="step-circle">3</div>
-            <div class="step-label">Clubs</div>
-        </div>
-        <div class="step" data-step="4">
-            <div class="step-circle">4</div>
-            <div class="step-label">Activities</div>
-        </div>
-        <div class="step" data-step="5">
-            <div class="step-circle">5</div>
-            <div class="step-label">Confirm</div>
-        </div>
+        <div class="step active" data-step="1"><div class="step-circle">1</div><div class="step-label">Identity</div></div>
+        <div class="step" data-step="2"><div class="step-circle">2</div><div class="step-label">Academic</div></div>
+        <div class="step" data-step="3"><div class="step-circle">3</div><div class="step-label">Clubs</div></div>
+        <div class="step" data-step="4"><div class="step-circle">4</div><div class="step-label">Activities</div></div>
+        <div class="step" data-step="5"><div class="step-circle">5</div><div class="step-label">Confirm</div></div>
     </div>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -1024,173 +471,125 @@
 
     <div class="form-container">
         <form id="registrationForm">
-            <!-- Step 1: Personal Information -->
+            <!-- Step 1 -->
             <div class="form-section active" data-section="1">
                 <h2>Identity Verification</h2>
-                
                 <div class="form-group">
                     <label class="required">Full Name</label>
-                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
-                    <div class="error-message">Please enter your full name</div>
+                    <input type="text" id="fullName" placeholder="Enter your full name">
+                    <div class="error-message">Required field</div>
                 </div>
-
                 <div class="form-group">
-                    <label class="required">USN (University Seat Number)</label>
-                    <input type="text" id="studentId" name="studentId" placeholder="e.g., 1VV20CS001">
-                    <div class="error-message">Please enter your USN</div>
+                    <label class="required">USN</label>
+                    <input type="text" id="studentId" placeholder="e.g., 1VV20CS001">
+                    <div class="error-message">Required field</div>
                 </div>
-
                 <div class="form-group">
-                    <label class="required">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="your.email@vvit.edu">
-                    <div class="error-message">Please enter a valid email address</div>
+                    <label class="required">Email</label>
+                    <input type="email" id="email" placeholder="your.email@vvit.edu">
+                    <div class="error-message">Valid email required</div>
                 </div>
-
                 <div class="form-group">
-                    <label class="required">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890">
-                    <div class="error-message">Please enter a valid phone number</div>
+                    <label class="required">Phone</label>
+                    <input type="tel" id="phone" placeholder="(123) 456-7890">
+                    <div class="error-message">Valid phone required</div>
                 </div>
-
                 <div class="form-group">
                     <label class="required">Date of Birth</label>
-                    <input type="date" id="dob" name="dob">
-                    <div class="error-message">Please select your date of birth</div>
+                    <input type="date" id="dob">
+                    <div class="error-message">Required field</div>
                 </div>
-
-                <div class="button-group">
-                    <div></div>
-                    <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
-                </div>
+                <div class="button-group"><div></div><button type="button" class="btn-next" onclick="nextStep()">Next →</button></div>
             </div>
 
-            <!-- Step 2: Academic Information -->
+            <!-- Step 2 -->
             <div class="form-section" data-section="2">
                 <h2>Academic Profile</h2>
-
                 <div class="form-group">
                     <label class="required">Branch / Department</label>
-                    <input type="text" id="branch" name="branch" placeholder="e.g., Computer Science, ECE, Mechanical...">
-                    <div class="error-message">Please enter your branch name</div>
+                    <input type="text" id="branch" placeholder="e.g., Computer Science, ECE, Mechanical...">
+                    <div class="error-message">Required field</div>
                 </div>
-
                 <div class="form-group">
-                    <label class="required">Year of Study</label>
+                    <label class="required">Year</label>
                     <div class="radio-group">
-                        <div class="radio-item" onclick="selectRadio(this, 'year')">
-                            <input type="radio" name="year" value="1st Year" hidden>
-                            <span>1st Year</span>
-                        </div>
-                        <div class="radio-item" onclick="selectRadio(this, 'year')">
-                            <input type="radio" name="year" value="2nd Year" hidden>
-                            <span>2nd Year</span>
-                        </div>
-                        <div class="radio-item" onclick="selectRadio(this, 'year')">
-                            <input type="radio" name="year" value="3rd Year" hidden>
-                            <span>3rd Year</span>
-                        </div>
-                        <div class="radio-item" onclick="selectRadio(this, 'year')">
-                            <input type="radio" name="year" value="4th Year" hidden>
-                            <span>4th Year</span>
-                        </div>
+                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="1st Year" hidden><span>1st Year</span></div>
+                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="2nd Year" hidden><span>2nd Year</span></div>
+                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="3rd Year" hidden><span>3rd Year</span></div>
+                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="4th Year" hidden><span>4th Year</span></div>
                     </div>
-                    <div class="error-message" id="yearError">Please select your year of study</div>
+                    <div class="error-message" id="yearError">Select your year</div>
                 </div>
-
                 <div class="form-group">
                     <label class="required">Section</label>
-                    <input type="text" id="section" name="section" placeholder="e.g., A, B, C">
-                    <div class="error-message">Please enter your section</div>
+                    <input type="text" id="section" placeholder="e.g., A, B, C">
+                    <div class="error-message">Required field</div>
                 </div>
-
                 <div class="form-group">
-                    <label class="required">Expected Graduation Year</label>
-                    <input type="number" id="graduation" name="graduation" min="2024" max="2030" placeholder="e.g., 2027">
-                    <div class="error-message">Please enter valid graduation year</div>
+                    <label class="required">Graduation Year</label>
+                    <input type="number" id="graduation" min="2024" max="2030" placeholder="e.g., 2027">
+                    <div class="error-message">Valid year required</div>
                 </div>
-
                 <div class="button-group">
                     <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
                     <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
                 </div>
             </div>
 
-            <!-- Step 3: Club Selection -->
+            <!-- Step 3 -->
             <div class="form-section" data-section="3">
                 <h2>Club Selection</h2>
-                <div class="min-clubs-notice">
-                    ⚡ PROTOCOL: Select minimum 2 clubs. Multi-club enrollment enabled.
-                </div>
-
-                <div class="club-section" id="club-techno" data-club="TechnoVerse">
+                <div class="min-clubs-notice">⚡ PROTOCOL: Select minimum 2 clubs</div>
+                
+                <div class="club-section" id="club-techno">
                     <div class="club-header">
                         <div class="club-icon">💻</div>
-                        <div class="club-title-group">
-                            <div class="club-name">TechnoVerse</div>
-                            <div class="club-tagline">Technology & Innovation Division</div>
-                        </div>
-                        <button type="button" class="club-select-btn" onclick="toggleClubSelection('techno', 'TechnoVerse')">Select</button>
+                        <div class="club-title-group"><div class="club-name">TechnoVerse</div><div class="club-tagline">Technology & Innovation</div></div>
+                        <button type="button" class="club-select-btn" onclick="toggleClub('techno','TechnoVerse')">Select</button>
                     </div>
                     <input type="checkbox" name="clubs" value="TechnoVerse" hidden>
                 </div>
-
-                <div class="club-section" id="club-vvei" data-club="VVEI">
+                
+                <div class="club-section" id="club-vvei">
                     <div class="club-header">
                         <div class="club-icon">📹</div>
-                        <div class="club-title-group">
-                            <div class="club-name">VVEI</div>
-                            <div class="club-tagline">Vijaya Vittala Entertainments | Media Operations</div>
-                        </div>
-                        <button type="button" class="club-select-btn" onclick="toggleClubSelection('vvei', 'VVEI')">Select</button>
+                        <div class="club-title-group"><div class="club-name">VVEI</div><div class="club-tagline">Media Operations</div></div>
+                        <button type="button" class="club-select-btn" onclick="toggleClub('vvei','VVEI')">Select</button>
                     </div>
                     <input type="checkbox" name="clubs" value="VVEI" hidden>
                 </div>
-
-                <div class="club-section" id="club-roundtable" data-club="The VVIT RoundTable">
+                
+                <div class="club-section" id="club-roundtable">
                     <div class="club-header">
                         <div class="club-icon">🎤</div>
-                        <div class="club-title-group">
-                            <div class="club-name">The VVIT RoundTable</div>
-                            <div class="club-tagline">Strategic Debate & Discourse Unit</div>
-                        </div>
-                        <button type="button" class="club-select-btn" onclick="toggleClubSelection('roundtable', 'The VVIT RoundTable')">Select</button>
+                        <div class="club-title-group"><div class="club-name">The VVIT RoundTable</div><div class="club-tagline">Debate & Discourse</div></div>
+                        <button type="button" class="club-select-btn" onclick="toggleClub('roundtable','The VVIT RoundTable')">Select</button>
                     </div>
                     <input type="checkbox" name="clubs" value="The VVIT RoundTable" hidden>
                 </div>
-
-                <div class="club-section" id="club-vonfloor" data-club="V'onFLOOR">
+                
+                <div class="club-section" id="club-vonfloor">
                     <div class="club-header">
                         <div class="club-icon">🎭</div>
-                        <div class="club-title-group">
-                            <div class="club-name">V'onFLOOR</div>
-                            <div class="club-tagline">Cultural & Performing Arts Division</div>
-                        </div>
-                        <button type="button" class="club-select-btn" onclick="toggleClubSelection('vonfloor', 'V\'onFLOOR')">Select</button>
+                        <div class="club-title-group"><div class="club-name">V'onFLOOR</div><div class="club-tagline">Cultural & Performing Arts</div></div>
+                        <button type="button" class="club-select-btn" onclick="toggleClub('vonfloor','V\'onFLOOR')">Select</button>
                     </div>
                     <input type="checkbox" name="clubs" value="V'onFLOOR" hidden>
                 </div>
-
-                <div class="error-message" id="clubError" style="text-align: center; margin-top: 15px;">⚠️ Minimum 2 clubs required for enrollment</div>
-
+                
+                <div class="error-message" id="clubError" style="text-align:center;margin-top:15px;">⚠️ Minimum 2 clubs required</div>
                 <div class="button-group">
                     <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
                     <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
                 </div>
             </div>
 
-            <!-- Step 4: Activities -->
+            <!-- Step 4 -->
             <div class="form-section" data-section="4">
                 <h2>Activity Configuration</h2>
-                <p style="color: rgba(255,255,255,0.5); margin-bottom: 25px; font-size: 0.9em;">Select operational modules for your assigned clubs</p>
-
-                <div class="club-section" id="activities-techno" style="display: none;">
-                    <div class="club-header">
-                        <div class="club-icon">💻</div>
-                        <div class="club-title-group">
-                            <div class="club-name">TechnoVerse Modules</div>
-                            <div class="club-tagline">Select your specialization tracks</div>
-                        </div>
-                    </div>
+                
+                <div class="club-section" id="act-techno" style="display:none;">
+                    <div class="club-header"><div class="club-icon">💻</div><div class="club-title-group"><div class="club-name">TechnoVerse Modules</div></div></div>
                     <div class="activities-list show">
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Hackathon/Ideathon" hidden>🏆 Hackathon/Ideathon</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Buildthon" hidden>🔨 Buildthon</div>
@@ -1202,15 +601,9 @@
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Tech Math" hidden>🔢 Tech Math</div>
                     </div>
                 </div>
-
-                <div class="club-section" id="activities-vvei" style="display: none;">
-                    <div class="club-header">
-                        <div class="club-icon">📹</div>
-                        <div class="club-title-group">
-                            <div class="club-name">VVEI Modules</div>
-                            <div class="club-tagline">Select your media operations</div>
-                        </div>
-                    </div>
+                
+                <div class="club-section" id="act-vvei" style="display:none;">
+                    <div class="club-header"><div class="club-icon">📹</div><div class="club-title-group"><div class="club-name">VVEI Modules</div></div></div>
                     <div class="activities-list show">
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="College Promotions" hidden>📢 College Promotions</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Insta Handle" hidden>📸 Insta Handle</div>
@@ -1225,112 +618,97 @@
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="College Magazine" hidden>📰 College Magazine</div>
                     </div>
                 </div>
-
-                <div class="club-section" id="activities-roundtable" style="display: none;">
-                    <div class="club-header">
-                        <div class="club-icon">🎤</div>
-                        <div class="club-title-group">
-                            <div class="club-name">RoundTable Modules</div>
-                            <div class="club-tagline">Select your debate formats</div>
-                        </div>
-                    </div>
+                
+                <div class="club-section" id="act-roundtable" style="display:none;">
+                    <div class="club-header"><div class="club-icon">🎤</div><div class="club-title-group"><div class="club-name">RoundTable Modules</div></div></div>
                     <div class="activities-list show">
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Heavy Tech Debates" hidden>⚔️ Heavy Tech Debates</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Rapid Fire Rounds" hidden>⚡ Rapid Fire Rounds</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Case Study Battle" hidden>📊 Case Study Battle</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Just A Minute" hidden>⏱️ Just A Minute (JAM)</div>
+                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Just A Minute" hidden>⏱️ Just A Minute</div>
                     </div>
                 </div>
-
-                <div class="club-section" id="activities-vonfloor" style="display: none;">
-                    <div class="club-header">
-                        <div class="club-icon">🎭</div>
-                        <div class="club-title-group">
-                            <div class="club-name">V'onFLOOR Modules</div>
-                            <div class="club-tagline">Select your artistic expressions</div>
-                        </div>
-                    </div>
+                
+                <div class="club-section" id="act-vonfloor" style="display:none;">
+                    <div class="club-header"><div class="club-icon">🎭</div><div class="club-title-group"><div class="club-name">V'onFLOOR Modules</div></div></div>
                     <div class="activities-list show">
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Music" hidden>🎵 Music</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Dance" hidden>💃 Dance</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Drawing" hidden>🎨 Drawing</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Mimic" hidden>🎭 Mimic</div>
                         <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Acting" hidden>🎬 Acting</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Hosting of Events" hidden>🎤 Hosting of Events</div>
+                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Hosting of Events" hidden>🎤 Hosting</div>
                     </div>
                 </div>
-
-                <div class="error-message" id="activityError" style="text-align: center; margin-top: 20px;">⚠️ Select at least one activity module</div>
-
-                <div class="form-group" style="margin-top: 30px;">
+                
+                <div class="error-message" id="activityError" style="text-align:center;margin-top:15px;">⚠️ Select at least one activity</div>
+                
+                <div class="form-group" style="margin-top:25px;">
                     <label>Mission Statement</label>
-                    <textarea id="motivation" name="motivation" placeholder="State your objectives and what you aim to achieve..." maxlength="500"></textarea>
-                    <div class="char-count">0 / 500 characters</div>
+                    <textarea id="motivation" placeholder="Your objectives..." maxlength="500"></textarea>
+                    <div class="char-count">0 / 500</div>
                 </div>
-
+                
                 <div class="button-group">
                     <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
                     <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
                 </div>
             </div>
 
-            <!-- Step 5: Review -->
+            <!-- Step 5 -->
             <div class="form-section" data-section="5">
                 <h2>Final Verification</h2>
                 
                 <div class="summary-card">
                     <h3>Identity Data</h3>
-                    <div class="summary-item"><span class="summary-label">Name</span><span class="summary-value" id="summaryName">-</span></div>
-                    <div class="summary-item"><span class="summary-label">USN</span><span class="summary-value" id="summaryId">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Email</span><span class="summary-value" id="summaryEmail">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Phone</span><span class="summary-value" id="summaryPhone">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Name</span><span class="summary-value" id="sumName">-</span></div>
+                    <div class="summary-item"><span class="summary-label">USN</span><span class="summary-value" id="sumId">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Email</span><span class="summary-value" id="sumEmail">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Phone</span><span class="summary-value" id="sumPhone">-</span></div>
                 </div>
-
+                
                 <div class="summary-card">
                     <h3>Academic Data</h3>
-                    <div class="summary-item"><span class="summary-label">Branch</span><span class="summary-value" id="summaryBranch">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Year</span><span class="summary-value" id="summaryYear">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Section</span><span class="summary-value" id="summarySection">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Graduation</span><span class="summary-value" id="summaryGrad">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Branch</span><span class="summary-value" id="sumBranch">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Year</span><span class="summary-value" id="sumYear">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Section</span><span class="summary-value" id="sumSection">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Graduation</span><span class="summary-value" id="sumGrad">-</span></div>
                 </div>
-
+                
                 <div class="summary-card">
                     <h3>Club Assignment</h3>
-                    <div class="summary-item"><span class="summary-label">Clubs</span><span class="summary-value" id="summaryClubs">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Activities</span><span class="summary-value" id="summaryActivities">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Clubs</span><span class="summary-value" id="sumClubs">-</span></div>
+                    <div class="summary-item"><span class="summary-label">Activities</span><span class="summary-value" id="sumActivities">-</span></div>
                 </div>
-
-                <div class="form-group" style="margin-top: 30px;">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)" style="width: 100%;">
-                        <input type="checkbox" id="terms" name="terms" value="accepted" hidden>
-                        <span>I confirm all data is accurate and agree to abide by VVIT Club protocols and code of conduct.</span>
+                
+                <div class="form-group" style="margin-top:25px;">
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)" style="width:100%;">
+                        <input type="checkbox" id="terms" hidden>
+                        <span>I confirm all data is accurate and agree to VVIT Club protocols.</span>
                     </div>
-                    <div class="error-message" id="termsError">Authorization required to proceed</div>
+                    <div class="error-message" id="termsError">Authorization required</div>
                 </div>
-
+                
                 <div class="button-group">
                     <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
-                    <button type="button" class="btn-submit" onclick="submitForm()">Transmit Data ✓</button>
+                    <button type="button" class="btn-submit" onclick="submitForm()">Transmit ✓</button>
                 </div>
             </div>
         </form>
 
-        <!-- Success Screen -->
         <div class="success-screen" id="successScreen">
             <div class="success-icon">🎉</div>
             <h2>Transmission Complete</h2>
             <p>Registration successful. Confirmation signal sent to your email.</p>
-            
             <div class="success-details">
                 <h3>Mission Log</h3>
-                <p><strong>Reference ID:</strong> <span id="refId">-</span></p>
+                <p><strong>Ref ID:</strong> <span id="refId">-</span></p>
                 <p><strong>Timestamp:</strong> <span id="submitDate">-</span></p>
-                <p><strong>Clubs:</strong> <span id="successClubs">-</span></p>
-                <p><strong>Modules:</strong> <span id="successActivities">-</span></p>
-                <p style="margin-top: 15px; color: var(--neon-green); font-weight: 600;">✓ Data archived to central database</p>
-                <p style="color: var(--neon-green); font-weight: 600;">✓ Confirmation signal transmitted</p>
+                <p><strong>Clubs:</strong> <span id="sClubs">-</span></p>
+                <p><strong>Modules:</strong> <span id="sActivities">-</span></p>
+                <p style="color:var(--neon-green);margin-top:15px;">✓ Data archived to central database</p>
+                <p style="color:var(--neon-green);">✓ Confirmation signal transmitted</p>
             </div>
-
             <button type="button" class="btn-reset" onclick="resetForm()">New Registration</button>
         </div>
     </div>
@@ -1338,22 +716,20 @@
 
 <script>
     // ============================================
-    // EMAILJS CONFIGURATION
+    // CONFIGURATION - UPDATE THESE!
     // ============================================
+    
+    // EmailJS Settings (Already filled with your credentials)
     const EMAILJS_SERVICE_ID = 'service_vvit2009';
     const EMAILJS_TEMPLATE_ID = 'template_fkfp5ns';
     const EMAILJS_PUBLIC_KEY = '3jggm3MsvGgZEWx0a';
     
-    // ============================================
-    // SECURITY CONFIGURATION
-    // ============================================
+    // Google Sheets - REPLACE WITH YOUR NEW DEPLOYMENT URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_NEW_SCRIPT_URL_HERE/exec';
+    
+    // Password
     const CLUB_PASSWORD = 'VVIT@STUDENT';
     
-    // ============================================
-    // GOOGLE SHEETS CONFIGURATION
-    // ============================================
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWOYxhYWGmWDx8dHCGu0v0PhnkKmDqbqfpfq1BE-SBeT25cfk76i6mYGnJtz4PElNEIA/exec';
-    const USE_GOOGLE_SHEET = true;
     // ============================================
 
     let currentStep = 1;
@@ -1363,21 +739,6 @@
     // Initialize EmailJS
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
-    // Generate floating particles
-    function createParticles() {
-        const container = document.getElementById('particles');
-        for (let i = 0; i < 30; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            particle.style.animationDelay = Math.random() * 10 + 's';
-            container.appendChild(particle);
-        }
-    }
-    createParticles();
-
-    // Password Gate
     function checkPassword() {
         const input = document.getElementById('gatePassword').value;
         const error = document.getElementById('gateError');
@@ -1388,224 +749,164 @@
         } else {
             error.classList.add('show');
             document.getElementById('gatePassword').value = '';
-            document.getElementById('gatePassword').focus();
         }
     }
 
-    // Character counters
-    document.querySelectorAll('textarea').forEach(textarea => {
-        textarea.addEventListener('input', function() {
-            const maxLength = this.getAttribute('maxlength') || 500;
-            const currentLength = this.value.length;
-            const counter = this.nextElementSibling;
-            if (counter && counter.classList.contains('char-count')) {
-                counter.textContent = `${currentLength} / ${maxLength} characters`;
-            }
-        });
+    // Character counter
+    document.getElementById('motivation').addEventListener('input', function() {
+        this.nextElementSibling.textContent = this.value.length + ' / 500';
     });
 
     function updateProgress() {
-        const progressFill = document.getElementById('progressFill');
-        const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-        progressFill.style.width = percentage + '%';
-
-        document.querySelectorAll('.step').forEach((step, index) => {
-            const stepNum = index + 1;
+        const fill = document.getElementById('progressFill');
+        fill.style.width = ((currentStep - 1) / (totalSteps - 1)) * 100 + '%';
+        
+        document.querySelectorAll('.step').forEach((step, i) => {
+            const num = i + 1;
             step.classList.remove('active', 'completed');
-            
-            if (stepNum === currentStep) {
-                step.classList.add('active');
-            } else if (stepNum < currentStep) {
+            if (num === currentStep) step.classList.add('active');
+            else if (num < currentStep) {
                 step.classList.add('completed');
-                step.querySelector('.step-circle').innerHTML = '✓';
+                step.querySelector('.step-circle').textContent = '✓';
             } else {
-                step.querySelector('.step-circle').innerHTML = stepNum;
+                step.querySelector('.step-circle').textContent = num;
             }
         });
     }
 
     function showSection(step) {
-        document.querySelectorAll('.form-section').forEach(section => {
-            section.classList.remove('active');
-        });
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
         document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
         
-        if (step === 4) showClubActivities();
+        if (step === 4) showActivities();
         if (step === 5) updateSummary();
         
         updateProgress();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
     }
 
-    function toggleClubSelection(clubId, clubName) {
-        const section = document.getElementById('club-' + clubId);
+    function toggleClub(id, name) {
+        const section = document.getElementById('club-' + id);
         const btn = section.querySelector('.club-select-btn');
-        const checkbox = section.querySelector('input[name="clubs"]');
+        const cb = section.querySelector('input[name="clubs"]');
         
-        if (selectedClubs.includes(clubName)) {
-            selectedClubs = selectedClubs.filter(c => c !== clubName);
+        if (selectedClubs.includes(name)) {
+            selectedClubs = selectedClubs.filter(c => c !== name);
             section.classList.remove('selected-club');
             btn.textContent = 'Select';
             btn.classList.remove('selected');
-            checkbox.checked = false;
+            cb.checked = false;
         } else {
-            selectedClubs.push(clubName);
+            selectedClubs.push(name);
             section.classList.add('selected-club');
             btn.textContent = 'Selected ✓';
             btn.classList.add('selected');
-            checkbox.checked = true;
+            cb.checked = true;
         }
-        
         document.getElementById('clubError').classList.remove('show');
     }
 
-    function showClubActivities() {
-        document.getElementById('activities-techno').style.display = 'none';
-        document.getElementById('activities-vvei').style.display = 'none';
-        document.getElementById('activities-roundtable').style.display = 'none';
-        document.getElementById('activities-vonfloor').style.display = 'none';
-        
-        if (selectedClubs.includes('TechnoVerse')) {
-            document.getElementById('activities-techno').style.display = 'block';
-        }
-        if (selectedClubs.includes('VVEI')) {
-            document.getElementById('activities-vvei').style.display = 'block';
-        }
-        if (selectedClubs.includes('The VVIT RoundTable')) {
-            document.getElementById('activities-roundtable').style.display = 'block';
-        }
-        if (selectedClubs.includes('V\'onFLOOR')) {
-            document.getElementById('activities-vonfloor').style.display = 'block';
-        }
+    function showActivities() {
+        const map = { 'TechnoVerse': 'act-techno', 'VVEI': 'act-vvei', 'The VVIT RoundTable': 'act-roundtable', 'V\'onFLOOR': 'act-vonfloor' };
+        Object.values(map).forEach(id => document.getElementById(id).style.display = 'none');
+        selectedClubs.forEach(club => {
+            if (map[club]) document.getElementById(map[club]).style.display = 'block';
+        });
     }
 
-    function toggleActivity(element) {
-        element.classList.toggle('selected');
-        const input = element.querySelector('input');
-        input.checked = !input.checked;
-        
-        const selected = document.querySelectorAll('input[name="activities"]:checked').length;
-        if (selected > 0) {
+    function toggleActivity(el) {
+        el.classList.toggle('selected');
+        el.querySelector('input').checked = !el.querySelector('input').checked;
+        if (document.querySelectorAll('input[name="activities"]:checked').length > 0) {
             document.getElementById('activityError').classList.remove('show');
         }
     }
 
+    function selectRadio(el, name) {
+        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+            inp.closest('.radio-item').classList.remove('selected');
+        });
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+    }
+
+    function toggleCheckbox(el) {
+        el.classList.toggle('selected');
+        el.querySelector('input').checked = !el.querySelector('input').checked;
+    }
+
     function validateStep(step) {
-        let isValid = true;
+        let valid = true;
         
         if (step === 1) {
-            const fields = ['fullName', 'studentId', 'email', 'phone', 'dob'];
-            fields.forEach(field => {
-                const input = document.getElementById(field);
-                const error = input.nextElementSibling;
-                
-                if (!input.value.trim()) {
-                    input.classList.add('error');
-                    error.classList.add('show');
-                    isValid = false;
-                } else if (field === 'email' && !isValidEmail(input.value)) {
-                    input.classList.add('error');
-                    error.classList.add('show');
-                    isValid = false;
-                } else if (field === 'phone' && !isValidPhone(input.value)) {
-                    input.classList.add('error');
-                    error.classList.add('show');
-                    isValid = false;
+            ['fullName','studentId','email','phone','dob'].forEach(id => {
+                const el = document.getElementById(id);
+                const err = el.nextElementSibling;
+                if (!el.value.trim() || (id === 'email' && !el.value.includes('@')) || (id === 'phone' && el.value.length < 10)) {
+                    el.classList.add('error');
+                    err.classList.add('show');
+                    valid = false;
                 } else {
-                    input.classList.remove('error');
-                    error.classList.remove('show');
+                    el.classList.remove('error');
+                    err.classList.remove('show');
                 }
             });
         }
         
         if (step === 2) {
-            const branch = document.getElementById('branch');
-            if (!branch.value.trim()) {
-                branch.classList.add('error');
-                branch.nextElementSibling.classList.add('show');
-                isValid = false;
+            ['branch','section','graduation'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) {
+                    el.classList.add('error');
+                    el.nextElementSibling.classList.add('show');
+                    valid = false;
+                } else {
+                    el.classList.remove('error');
+                    el.nextElementSibling.classList.remove('show');
+                }
+            });
+            if (!document.querySelector('input[name="year"]:checked')) {
+                document.getElementById('yearError').classList.add('show');
+                valid = false;
             } else {
-                branch.classList.remove('error');
-                branch.nextElementSibling.classList.remove('show');
-            }
-
-            const yearSelected = document.querySelector('input[name="year"]:checked');
-            const yearError = document.getElementById('yearError');
-            if (!yearSelected) {
-                yearError.classList.add('show');
-                isValid = false;
-            } else {
-                yearError.classList.remove('show');
-            }
-
-            const section = document.getElementById('section');
-            if (!section.value.trim()) {
-                section.classList.add('error');
-                section.nextElementSibling.classList.add('show');
-                isValid = false;
-            } else {
-                section.classList.remove('error');
-                section.nextElementSibling.classList.remove('show');
-            }
-
-            const grad = document.getElementById('graduation');
-            if (!grad.value) {
-                grad.classList.add('error');
-                grad.nextElementSibling.classList.add('show');
-                isValid = false;
-            } else {
-                grad.classList.remove('error');
-                grad.nextElementSibling.classList.remove('show');
+                document.getElementById('yearError').classList.remove('show');
             }
         }
-
+        
         if (step === 3) {
             if (selectedClubs.length < 2) {
                 document.getElementById('clubError').classList.add('show');
-                isValid = false;
+                valid = false;
             } else {
                 document.getElementById('clubError').classList.remove('show');
             }
         }
-
+        
         if (step === 4) {
-            const activities = document.querySelectorAll('input[name="activities"]:checked');
-            if (activities.length === 0) {
+            if (document.querySelectorAll('input[name="activities"]:checked').length === 0) {
                 document.getElementById('activityError').classList.add('show');
-                isValid = false;
+                valid = false;
             } else {
                 document.getElementById('activityError').classList.remove('show');
             }
         }
-
+        
         if (step === 5) {
-            const terms = document.getElementById('terms');
-            const termsError = document.getElementById('termsError');
-            if (!terms.checked) {
-                termsError.classList.add('show');
-                isValid = false;
+            if (!document.getElementById('terms').checked) {
+                document.getElementById('termsError').classList.add('show');
+                valid = false;
             } else {
-                termsError.classList.remove('show');
+                document.getElementById('termsError').classList.remove('show');
             }
         }
-
-        return isValid;
-    }
-
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function isValidPhone(phone) {
-        return /^[\d\s\-\(\)\+]{10,}$/.test(phone);
+        
+        return valid;
     }
 
     function nextStep() {
-        if (validateStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                showSection(currentStep);
-            }
+        if (validateStep(currentStep) && currentStep < totalSteps) {
+            currentStep++;
+            showSection(currentStep);
         }
     }
 
@@ -1616,40 +917,26 @@
         }
     }
 
-    function selectRadio(element, name) {
-        document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-            input.closest('.radio-item').classList.remove('selected');
-        });
-        element.classList.add('selected');
-        element.querySelector('input').checked = true;
-    }
-
-    function toggleCheckbox(element) {
-        element.classList.toggle('selected');
-        const input = element.querySelector('input');
-        input.checked = !input.checked;
-    }
-
     function updateSummary() {
-        document.getElementById('summaryName').textContent = document.getElementById('fullName').value || '-';
-        document.getElementById('summaryId').textContent = document.getElementById('studentId').value || '-';
-        document.getElementById('summaryEmail').textContent = document.getElementById('email').value || '-';
-        document.getElementById('summaryPhone').textContent = document.getElementById('phone').value || '-';
-        document.getElementById('summaryBranch').textContent = document.getElementById('branch').value || '-';
+        document.getElementById('sumName').textContent = document.getElementById('fullName').value || '-';
+        document.getElementById('sumId').textContent = document.getElementById('studentId').value || '-';
+        document.getElementById('sumEmail').textContent = document.getElementById('email').value || '-';
+        document.getElementById('sumPhone').textContent = document.getElementById('phone').value || '-';
+        document.getElementById('sumBranch').textContent = document.getElementById('branch').value || '-';
         
         const year = document.querySelector('input[name="year"]:checked');
-        document.getElementById('summaryYear').textContent = year ? year.value : '-';
+        document.getElementById('sumYear').textContent = year ? year.value : '-';
         
-        document.getElementById('summarySection').textContent = document.getElementById('section').value || '-';
-        document.getElementById('summaryGrad').textContent = document.getElementById('graduation').value || '-';
-        document.getElementById('summaryClubs').textContent = selectedClubs.join(', ') || '-';
+        document.getElementById('sumSection').textContent = document.getElementById('section').value || '-';
+        document.getElementById('sumGrad').textContent = document.getElementById('graduation').value || '-';
+        document.getElementById('sumClubs').textContent = selectedClubs.join(', ') || '-';
         
-        const activities = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
-        document.getElementById('summaryActivities').textContent = activities.join(', ') || '-';
+        const acts = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
+        document.getElementById('sumActivities').textContent = acts.join(', ') || '-';
     }
 
-    function collectFormData() {
-        const activities = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
+    function collectData() {
+        const acts = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
         const year = document.querySelector('input[name="year"]:checked');
         
         return {
@@ -1663,60 +950,56 @@
             section: document.getElementById('section').value,
             graduation: document.getElementById('graduation').value,
             clubs: selectedClubs.join(', '),
-            activities: activities.join(', '),
+            activities: acts.join(', '),
             motivation: document.getElementById('motivation').value || ''
         };
     }
 
     async function submitForm() {
         if (!validateStep(5)) return;
-
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        loadingOverlay.classList.add('active');
-
-        const formData = collectFormData();
+        
+        document.getElementById('loadingOverlay').classList.add('active');
+        
+        const data = collectData();
         const refId = 'VVIT-' + Date.now().toString(36).toUpperCase();
         const now = new Date().toLocaleString();
 
         try {
-            // 1. Save to Google Sheet
-            if (USE_GOOGLE_SHEET) {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-            }
+            // Save to Google Sheet
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-            // 2. Send automatic confirmation email via EmailJS
+            // Send Email via EmailJS
             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                to_email: formData.email,
+                to_email: data.email,
                 refId: refId,
-                fullName: formData.fullName,
-                studentId: formData.studentId,
-                clubs: formData.clubs,
-                activities: formData.activities,
-                reply_to: formData.email
+                fullName: data.fullName,
+                studentId: data.studentId,
+                clubs: data.clubs,
+                activities: data.activities,
+                reply_to: data.email
             });
 
             // Show success
             document.getElementById('refId').textContent = refId;
             document.getElementById('submitDate').textContent = now;
-            document.getElementById('successClubs').textContent = formData.clubs;
-            document.getElementById('successActivities').textContent = formData.activities;
+            document.getElementById('sClubs').textContent = data.clubs;
+            document.getElementById('sActivities').textContent = data.activities;
 
             document.getElementById('registrationForm').style.display = 'none';
             document.getElementById('progressBar').style.display = 'none';
             document.querySelector('.header').style.display = 'none';
-            
             document.getElementById('successScreen').classList.add('active');
 
-        } catch (error) {
-            console.error('Submission error:', error);
-            alert('Transmission failed. Please retry or contact system admin.');
+        } catch (err) {
+            console.error(err);
+            alert('Transmission failed. Please retry.');
         } finally {
-            loadingOverlay.classList.remove('active');
+            document.getElementById('loadingOverlay').classList.remove('active');
         }
     }
 
@@ -1730,9 +1013,6 @@
         });
         document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
         document.querySelectorAll('.show').forEach(el => el.classList.remove('show'));
-        document.querySelectorAll('.step-circle').forEach((el, i) => {
-            if (i > 0) el.innerHTML = i + 1;
-        });
         
         selectedClubs = [];
         currentStep = 1;
@@ -1745,28 +1025,26 @@
         showSection(1);
     }
 
-    // Input listeners
-    document.querySelectorAll('input, select, textarea').forEach(input => {
-        input.addEventListener('input', function() {
+    // Clear errors on input
+    document.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', function() {
             this.classList.remove('error');
-            if (this.nextElementSibling && this.nextElementSibling.classList.contains('error-message')) {
-                this.nextElementSibling.classList.remove('show');
-            }
+            const err = this.nextElementSibling;
+            if (err && err.classList.contains('error-message')) err.classList.remove('show');
         });
     });
 
-    // Progress step clicks
+    // Step clicks
     document.querySelectorAll('.step').forEach(step => {
         step.addEventListener('click', function() {
-            const stepNum = parseInt(this.getAttribute('data-step'));
-            if (stepNum < currentStep) {
-                currentStep = stepNum;
+            const num = parseInt(this.dataset.step);
+            if (num < currentStep) {
+                currentStep = num;
                 showSection(currentStep);
             }
         });
     });
 
-    // Initialize
     updateProgress();
 </script>
 
