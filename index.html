@@ -88,7 +88,212 @@ button:hover {
 
 <script>
 // ================= CONFIG =================
+const GOOGLE_SCRIPT_URL = "<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VVIT Club Registration</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0a0e1a;
+    color: white;
+    margin: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #00ff88;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #111;
+    color: white;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #00ff88, #00d4ff);
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.error {
+    border-color: red;
+}
+
+.success {
+    text-align: center;
+    margin-top: 20px;
+    color: #00ff88;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>VVIT Club Registration</h1>
+
+    <input type="text" id="fullName" placeholder="Full Name">
+    <input type="text" id="studentId" placeholder="USN">
+    <input type="email" id="email" placeholder="Email">
+    <input type="tel" id="phone" placeholder="Phone">
+    <input type="text" id="branch" placeholder="Branch">
+    <input type="text" id="year" placeholder="Year">
+    <input type="text" id="section" placeholder="Section">
+    <input type="number" id="graduation" placeholder="Graduation Year">
+
+    <textarea id="clubs" placeholder="Selected Clubs"></textarea>
+    <textarea id="activities" placeholder="Activities"></textarea>
+    <textarea id="motivation" placeholder="Motivation"></textarea>
+
+    <button onclick="submitForm()">Submit</button>
+
+    <div id="status" class="success"></div>
+</div>
+
+<script>
+// ================= CONFIG =================
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJS1m_oIPUNJg8I8iN20Qxzxl2MWq8r_a3ZFVsEme0MqziyvW94q7fOAGz9tc0PM0Yfw/exec";
+
+const EMAILJS_SERVICE_ID = "service_vvit2009";
+const EMAILJS_TEMPLATE_ID = "template_fkfp5ns";
+const EMAILJS_PUBLIC_KEY = "3jggm3MsvGgZEWx0a";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ================= AUTO SAVE =================
+document.querySelectorAll("input, textarea").forEach(el => {
+    el.addEventListener("input", () => {
+        const data = {};
+        document.querySelectorAll("input, textarea").forEach(e => {
+            data[e.id] = e.value;
+        });
+        localStorage.setItem("formData", JSON.stringify(data));
+    });
+});
+
+window.onload = () => {
+    const saved = JSON.parse(localStorage.getItem("formData"));
+    if (saved) {
+        Object.keys(saved).forEach(id => {
+            if (document.getElementById(id)) {
+                document.getElementById(id).value = saved[id];
+            }
+        });
+    }
+};
+
+// ================= VALIDATION =================
+function validate() {
+    let valid = true;
+
+    ["fullName","studentId","email"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) {
+            el.classList.add("error");
+            valid = false;
+        } else {
+            el.classList.remove("error");
+        }
+    });
+
+    return valid;
+}
+
+// ================= COLLECT DATA =================
+function collectData() {
+    return {
+        fullName: fullName.value,
+        studentId: studentId.value,
+        email: email.value,
+        phone: phone.value,
+        dob: "",
+        branch: branch.value,
+        year: year.value,
+        section: section.value,
+        graduation: graduation.value,
+        clubs: clubs.value,
+        activities: activities.value,
+        motivation: motivation.value
+    };
+}
+
+// ================= SUBMIT =================
+async function submitForm() {
+
+    if (!validate()) {
+        alert("Please fill required fields");
+        return;
+    }
+
+    const data = collectData();
+    const statusDiv = document.getElementById("status");
+
+    statusDiv.innerText = "Submitting...";
+
+    try {
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result.status === "duplicate") {
+            statusDiv.innerText = "⚠️ Already Registered!";
+            return;
+        }
+
+        if (result.status !== "success") {
+            throw new Error(result.message);
+        }
+
+        // EmailJS backup
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: data.email,
+            fullName: data.fullName,
+            studentId: data.studentId,
+            clubs: data.clubs
+        });
+
+        statusDiv.innerText = "✅ Registration Successful!";
+        localStorage.removeItem("formData");
+
+    } catch (err) {
+        console.error(err);
+        statusDiv.innerText = "❌ Error: " + err.message;
+    }
+}
+</script>
+
+</body>
+</html>";
 
 const EMAILJS_SERVICE_ID = "service_vvit2009";
 const EMAILJS_TEMPLATE_ID = "template_fkfp5ns";
