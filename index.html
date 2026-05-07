@@ -498,4 +498,239 @@
         <div class="admin-title"><i class="fas fa-shield-alt"></i> Admin Only</div>
         <button class="btn btn-export" onclick="showAdminModal()">
           <i class="fas fa-download"></i> EXPORT REGISTRATIONS
-        </b
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-overlay" id="successModal">
+    <div class="success-modal">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h2 style="color:var(--success);font-family:'Rajdhani',sans-serif;font-size:2rem;">Registration Successful!</h2>
+      <p style="color:var(--muted);margin:0.8rem 0;">Confirmation email sent to your inbox</p>
+      <div class="reg-details" id="regDetails"></div>
+      <button class="btn btn-primary" onclick="closeSuccessModal()" style="margin-top:1rem;">
+        <i class="fas fa-check-circle"></i> DONE
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Password Modal -->
+  <div class="admin-overlay" id="adminModal">
+    <div class="admin-modal">
+      <h3 style="color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:1.6rem;margin-bottom:1rem;">
+        <i class="fas fa-lock"></i> Admin Verification
+      </h3>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Enter admin password to export data</p>
+      <input type="password" class="input-field" id="adminPassword" placeholder="Admin password" style="margin-bottom:1rem;">
+      <div id="adminMessage"></div>
+      <div style="display:flex;gap:0.8rem;">
+        <button class="btn btn-outline" onclick="closeAdminModal()" style="flex:1;">Cancel</button>
+        <button class="btn btn-export" onclick="verifyAdmin()" style="flex:1;">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGEbPjyGaNc_I88HcWuKt_NGrFfbkVcFk",
+      authDomain: "vvit-club-registration.firebaseapp.com",
+      projectId: "vvit-club-registration",
+      storageBucket: "vvit-club-registration.firebasestorage.app",
+      messagingSenderId: "5035896195",
+      appId: "1:5035896195:web:42bde847766111f24d1ab6",
+      measurementId: "G-X4P3LHGKCB"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    emailjs.init("3jggm3MsvGgZEWx0a");
+
+    const CORRECT_PASSWORD = "VVIT@STUDENT";
+    const ADMIN_PASSWORD = "VVIT@ADMIN05";
+
+    const CLUBS = [
+      { id: 'technoverse', name: 'TechnoVerse', emoji: '💻', desc: 'Tech innovation • Hackathons • Coding' },
+      { id: 'vvei', name: 'VVEI Media', emoji: '🎬', desc: 'Vijaya Vittala Entertainments • Film & Media' },
+      { id: 'roundtable', name: 'The VVIT RoundTable', emoji: '🎤', desc: 'Debate • MUNs • Public speaking' },
+      { id: 'vonfloor', name: "V'onFLOOR", emoji: '💃', desc: 'Cultural fest • Dance • Music • Drama' }
+    ];
+
+    let currentStep = 1;
+    let userData = {};
+    let registeredEmails = new Set();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      renderClubs();
+      loadRegisteredEmails();
+    });
+
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 35; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 6 + 's';
+        p.style.animationDuration = (Math.random() * 6 + 3) + 's';
+        container.appendChild(p);
+      }
+    }
+
+    function renderClubs() {
+      document.getElementById('clubsGrid').innerHTML = CLUBS.map(c => `
+        <div class="club-card" data-id="${c.id}" onclick="toggleClub('${c.id}')">
+          <div class="check-badge">✓</div>
+          <div class="club-emoji">${c.emoji}</div>
+          <div class="club-name">${c.name}</div>
+          <div class="club-desc">${c.desc}</div>
+        </div>
+      `).join('');
+    }
+
+    function toggleClub(id) {
+      document.querySelector(`[data-id="${id}"]`).classList.toggle('selected');
+      document.getElementById('clubCount').textContent = document.querySelectorAll('.club-card.selected').length;
+      document.getElementById('clubMessage').innerHTML = '';
+    }
+
+    function getSelectedClubs() {
+      return Array.from(document.querySelectorAll('.club-card.selected')).map(c => c.dataset.id);
+    }
+
+    async function loadRegisteredEmails() {
+      try {
+        const snap = await db.collection('registrations').get();
+        snap.forEach(doc => { const d = doc.data(); if (d.email) registeredEmails.add(d.email.toLowerCase()); });
+      } catch (e) {
+        const local = JSON.parse(localStorage.getItem('vvit_registrations') || '[]');
+        local.forEach(r => { if (r.email) registeredEmails.add(r.email.toLowerCase()); });
+      }
+    }
+
+    function isEmailRegistered(email) { return registeredEmails.has(email.toLowerCase()); }
+
+    function goToStep(step) {
+      document.getElementById(`section${currentStep}`).classList.remove('active');
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      currentStep = step;
+      document.getElementById(`section${step}`).classList.add('active');
+      document.getElementById(`step${step}`).classList.add('active');
+      for (let i = 1; i < step; i++) document.getElementById(`step${i}`).classList.add('completed');
+    }
+
+    function verifyAccess() {
+      const pw = document.getElementById('accessPassword').value;
+      const msg = document.getElementById('passwordMessage');
+      if (pw === CORRECT_PASSWORD) {
+        msg.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> Access granted!</div>';
+        setTimeout(() => goToStep(2), 500);
+      } else if (pw.length > 0) {
+        msg.innerHTML = '<div class="alert alert-error"><i class="fas fa-times-circle"></i> Incorrect password.</div>';
+      }
+    }
+
+    function validateProfile() {
+      const email = document.getElementById('studentEmail').value.trim();
+      const name = document.getElementById('fullName').value.trim();
+      const branch = document.getElementById('branchName').value.trim();
+      if (!email || !name || !branch) return alert('Please fill all fields.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Enter a valid email.');
+      if (isEmailRegistered(email)) return alert('This email is already registered.');
+      userData = { email, name, branch };
+      goToStep(3);
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const selected = getSelectedClubs();
+      const terms = document.getElementById('termsCheckbox').checked;
+      if (selected.length < 2) return document.getElementById('clubMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Select at least 2 clubs.</div>';
+      if (!terms) return document.getElementById('clubMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i> Accept terms to continue.</div>';
+
+      const clubNames = selected.map(id => CLUBS.find(c => c.id === id)?.name || id);
+      const regData = { ...userData, clubs: clubNames, clubIds: selected, timestamp: new Date().toISOString(), registrationId: 'VVIT-' + Date.now().toString(36).toUpperCase(), acceptedTerms: true };
+      const btn = document.getElementById('submitBtn');
+      btn.classList.add('loading');
+      document.getElementById('submitBtn').disabled = true;
+
+      try {
+        await db.collection('registrations').add(regData);
+        registeredEmails.add(userData.email.toLowerCase());
+        const local = JSON.parse(localStorage.getItem('vvit_registrations') || '[]');
+        local.push(regData);
+        localStorage.setItem('vvit_registrations', JSON.stringify(local));
+        await emailjs.send('service_017nmv2', 'template_fkfp5ns', { to_email: regData.email, to_name: regData.name, registration_id: regData.registrationId, branch: regData.branch, clubs: regData.clubs.join(', '), reply_to: regData.email });
+        showSuccessModal(regData);
+        resetForm();
+      } catch (err) { console.error(err); alert('Registration failed.'); }
+      finally { btn.classList.remove('loading'); document.getElementById('submitBtn').disabled = false; }
+    });
+
+    function showSuccessModal(data) {
+      document.getElementById('regDetails').innerHTML = `
+        <div class="detail-row"><span class="detail-label">Registration ID</span><span class="detail-value">${data.registrationId}</span></div>
+        <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${data.name}</span></div>
+        <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${data.email}</span></div>
+        <div class="detail-row"><span class="detail-label">Branch</span><span class="detail-value">${data.branch}</span></div>
+        <div class="detail-row"><span class="detail-label">Clubs</span><span class="detail-value">${data.clubs.join(', ')}</span></div>
+      `;
+      document.getElementById('successModal').style.display = 'flex';
+    }
+
+    function closeSuccessModal() { document.getElementById('successModal').style.display = 'none'; }
+
+    function resetForm() {
+      document.getElementById('studentEmail').value = '';
+      document.getElementById('fullName').value = '';
+      document.getElementById('branchName').value = '';
+      document.querySelectorAll('.club-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('clubCount').textContent = '0';
+      document.getElementById('termsCheckbox').checked = false;
+      userData = {};
+      goToStep(1);
+    }
+
+    // Admin Export
+    function showAdminModal() {
+      document.getElementById('adminModal').style.display = 'flex';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('adminMessage').innerHTML = '';
+    }
+
+    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+    async function verifyAdmin() {
+      const pw = document.getElementById('adminPassword').value;
+      if (pw === ADMIN_PASSWORD) {
+        await exportCSV();
+        closeAdminModal();
+      } else {
+        document.getElementById('adminMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-times-circle"></i> Wrong admin password!</div>';
+      }
+    }
+
+    async function exportCSV() {
+      let registrations = [];
+      try {
+        const snap = await db.collection('registrations').orderBy('timestamp', 'desc').get();
+        snap.forEach(doc => registrations.push(doc.data()));
+      } catch (e) {
+        registrations = JSON.parse(localStorage.getItem('vvit_registrations') || '[]');
+      }
+      const unique = Array.from(new Map(registrations.map(r => [r.registrationId, r])).values());
+      const csv = [['Registration ID','Name','Email','Branch','Clubs','Timestamp'], ...unique.map(r => [r.registrationId, r.name, r.email, r.branch, (r.clubs||[]).join('; '), r.timestamp])].map(row => row.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `VVIT_Registrations_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert(`✅ Exported ${unique.length} registrations!`);
+    }
+  </script>
+</body>
+</html>
