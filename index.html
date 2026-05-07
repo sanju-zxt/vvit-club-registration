@@ -1,1107 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VVIT Club Registration</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --neon-green: #00ff88;
-            --neon-blue: #00d4ff;
-            --dark-bg: #0a0e1a;
-            --card-bg: rgba(16, 24, 48, 0.9);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
-            min-height: 100vh;
-            color: white;
-        }
-
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(0,255,136,0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(0,212,255,0.08) 0%, transparent 50%);
-            z-index: 0;
-            animation: bgPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes bgPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .container {
-            position: relative; z-index: 10;
-            max-width: 900px; margin: 0 auto; padding: 20px;
-        }
-
-        .header {
-            text-align: center; padding: 40px 20px;
-            background: var(--card-bg);
-            border-radius: 20px; margin-bottom: 30px;
-            border: 1px solid rgba(0,255,136,0.2);
-            box-shadow: 0 0 40px rgba(0,255,136,0.1);
-        }
-
-        .header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8em;
-            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2em;
-            color: rgba(255,255,255,0.7);
-            letter-spacing: 3px;
-        }
-
-        .header .location {
-            color: var(--neon-green);
-            margin-top: 10px;
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 2px;
-        }
-
-        .progress-bar {
-            display: flex; justify-content: space-between;
-            padding: 25px 40px; background: var(--card-bg);
-            border-radius: 15px; margin-bottom: 30px;
-            border: 1px solid rgba(0,255,136,0.1);
-            position: relative;
-        }
-
-        .progress-bar::before {
-            content: ''; position: absolute; top: 50%; left: 60px; right: 60px;
-            height: 2px; background: rgba(255,255,255,0.1);
-        }
-
-        .progress-fill {
-            position: absolute; top: 50%; left: 60px; height: 2px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .step {
-            display: flex; flex-direction: column; align-items: center;
-            position: relative; z-index: 2; cursor: pointer;
-        }
-
-        .step-circle {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: rgba(255,255,255,0.5);
-            border: 2px solid rgba(255,255,255,0.1);
-            font-family: 'Orbitron', sans-serif; font-size: 0.85em;
-        }
-
-        .step.active .step-circle {
-            background: rgba(0,255,136,0.2); color: var(--neon-green);
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0,255,136,0.4);
-        }
-
-        .step.completed .step-circle {
-            background: rgba(0,255,136,0.3); color: var(--neon-green);
-            border-color: var(--neon-green);
-        }
-
-        .step-label {
-            margin-top: 8px; font-size: 0.75em;
-            color: rgba(255,255,255,0.5);
-            font-weight: 600; text-transform: uppercase;
-        }
-
-        .step.active .step-label { color: var(--neon-green); }
-
-        .form-container {
-            background: var(--card-bg);
-            border-radius: 20px; padding: 40px;
-            border: 1px solid rgba(0,255,136,0.1);
-        }
-
-        .form-section { display: none; animation: fadeIn 0.5s ease; }
-        .form-section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-section h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(0,255,136,0.3);
-        }
-
-        .form-group { margin-bottom: 25px; }
-
-        label {
-            display: block; margin-bottom: 8px;
-            font-weight: 600; color: rgba(255,255,255,0.8);
-            font-size: 0.9em; text-transform: uppercase;
-            font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;
-        }
-
-        .required::after { content: ' *'; color: var(--neon-green); }
-
-        input, select, textarea {
-            width: 100%; padding: 14px 16px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; font-size: 1em; color: white;
-            transition: all 0.3s ease;
-        }
-
-        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.3); }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none; border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0,255,136,0.15);
-        }
-
-        input.error, select.error, textarea.error {
-            border-color: #ff4757;
-            box-shadow: 0 0 20px rgba(255,71,87,0.15);
-        }
-
-        .error-message {
-            color: #ff4757; font-size: 0.85em;
-            margin-top: 8px; display: none;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        .error-message.show { display: block; }
-
-        .radio-group, .checkbox-group {
-            display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px;
-        }
-
-        .radio-item, .checkbox-item {
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .radio-item:hover, .checkbox-item:hover {
-            border-color: var(--neon-green);
-            background: rgba(0,255,136,0.05);
-        }
-
-        .radio-item.selected, .checkbox-item.selected {
-            border-color: var(--neon-green);
-            background: rgba(0,255,136,0.1);
-            color: var(--neon-green);
-        }
-
-        .club-section {
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 15px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-        }
-
-        .club-section:hover { border-color: rgba(0,255,136,0.2); }
-        .club-section.selected-club {
-            border-color: var(--neon-green);
-            background: rgba(0,255,136,0.05);
-        }
-
-        .club-header { display: flex; align-items: center; }
-        .club-icon { font-size: 2.2em; margin-right: 15px; }
-
-        .club-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1em; color: white;
-        }
-
-        .club-tagline {
-            font-size: 0.85em; color: rgba(255,255,255,0.5);
-        }
-
-        .club-select-btn {
-            padding: 8px 20px;
-            background: transparent;
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75em; font-weight: 600;
-            cursor: pointer; margin-left: auto;
-        }
-
-        .club-select-btn.selected {
-            background: var(--neon-green); color: var(--dark-bg);
-        }
-
-        .activities-list { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .activities-list.show { display: block; }
-
-        .activity-tag {
-            display: inline-block; padding: 6px 14px; margin: 4px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; font-size: 0.85em;
-            cursor: pointer; color: rgba(255,255,255,0.7);
-        }
-
-        .activity-tag.selected {
-            border-color: var(--neon-blue);
-            background: rgba(0,212,255,0.15);
-            color: var(--neon-blue);
-        }
-
-        .activity-tag input { display: none; }
-
-        textarea { resize: vertical; min-height: 120px; }
-
-        .char-count {
-            text-align: right; font-size: 0.8em;
-            color: rgba(255,255,255,0.4);
-            margin-top: 8px;
-        }
-
-        .button-group {
-            display: flex; justify-content: space-between;
-            margin-top: 40px; gap: 15px;
-        }
-
-        button {
-            padding: 14px 32px; border: none;
-            border-radius: 10px; font-size: 1em;
-            font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px; text-transform: uppercase;
-        }
-
-        .btn-prev {
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .btn-next, .btn-submit {
-            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            color: var(--dark-bg);
-            flex: 1; max-width: 200px;
-        }
-
-        .btn-submit { max-width: 100%; }
-
-        .summary-card {
-            background: rgba(255,255,255,0.02);
-            border-radius: 15px; padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .summary-card h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green); margin-bottom: 20px;
-        }
-
-        .summary-item {
-            display: flex; justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .summary-label { color: var(--neon-green); font-weight: 600; }
-        .summary-value { color: rgba(255,255,255,0.8); }
-
-        .success-screen { display: none; text-align: center; padding: 60px 40px; }
-        .success-screen.active { display: block; }
-        .success-icon { font-size: 5em; margin-bottom: 20px; }
-
-        .success-screen h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green); font-size: 2em;
-        }
-
-        .success-details {
-            background: rgba(0,255,136,0.05);
-            border-radius: 15px; padding: 25px;
-            margin: 30px 0; text-align: left;
-            border: 1px solid rgba(0,255,136,0.2);
-        }
-
-        .success-details h3 { color: var(--neon-green); margin-bottom: 15px; }
-        .success-details p { margin-bottom: 10px; color: rgba(255,255,255,0.8); }
-
-        .btn-reset {
-            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            color: var(--dark-bg); padding: 14px 40px;
-        }
-
-        .loading-overlay {
-            display: none; position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10,14,26,0.95);
-            z-index: 1000; justify-content: center;
-            align-items: center; flex-direction: column;
-        }
-
-        .loading-overlay.active { display: flex; }
-
-        .spinner {
-            width: 50px; height: 50px;
-            border: 3px solid rgba(0,255,136,0.1);
-            border-top-color: var(--neon-green);
-            border-radius: 50%; animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loading-text {
-            color: var(--neon-green);
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 3px;
-        }
-
-        .password-gate {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--dark-bg); z-index: 2000;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .password-gate.hidden { display: none; }
-
-        .gate-card {
-            background: var(--card-bg); border-radius: 20px;
-            padding: 50px; max-width: 450px; width: 100%;
-            text-align: center; border: 1px solid rgba(0,255,136,0.2);
-        }
-
-        .gate-card h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green); margin-bottom: 20px;
-        }
-
-        .gate-input {
-            width: 100%; padding: 15px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; color: white;
-            font-size: 1.2em; text-align: center;
-            letter-spacing: 5px; margin-bottom: 20px;
-        }
-
-        .gate-input:focus { outline: none; border-color: var(--neon-green); }
-
-        .gate-error { color: #ff4757; display: none; margin-bottom: 15px; }
-        .gate-error.show { display: block; }
-
-        .btn-gate {
-            width: 100%; padding: 15px;
-            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-            color: var(--dark-bg); border: none;
-            border-radius: 10px; font-family: 'Orbitron', sans-serif;
-            font-weight: 700; cursor: pointer;
-        }
-
-        .min-clubs-notice {
-            background: rgba(0,255,136,0.05);
-            border: 1px solid rgba(0,255,136,0.2);
-            color: var(--neon-green);
-            padding: 15px; border-radius: 10px;
-            margin-bottom: 25px;
-        }
-
-        .already-registered {
-            display: none;
-            text-align: center;
-            padding: 60px 40px;
-        }
-
-        .already-registered.active {
-            display: block;
-        }
-
-        .already-registered h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: #ff4757;
-            margin-bottom: 20px;
-        }
-
-        .already-registered p {
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 30px;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 { font-size: 1.2em; }
-            .form-container { padding: 20px; }
-            .button-group { flex-direction: column; }
-            .btn-next, .btn-submit { max-width: 100%; }
-        }
-    </style>
-<base target="_blank">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>VVIT · Elite Club Registration 2026</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #00f2fe;
+      --secondary: #4facfe;
+      --accent: #fa709a;
+      --gold: #f5af19;
+      --dark: #0a0e27;
+      --darker: #060918;
+      --card-bg: rgba(16, 21, 42, 0.92);
+      --glass: rgba(255, 255, 255, 0.03);
+      --border: rgba(0, 242, 254, 0.35);
+      --text: #e8edf5;
+      --muted: #8892b0;
+      --success: #00e676;
+      --error: #ff1744;
+      --warning: #ff9100;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--darker);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated mesh background */
+    .mesh-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 20% 50%, rgba(0, 242, 254, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(79, 172, 254, 0.14) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(250, 112, 154, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(245, 175, 25, 0.10) 0%, transparent 50%);
+      animation: meshMove 20s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes meshMove {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      33% { transform: scale(1.1) rotate(1deg); }
+      66% { transform: scale(0.95) rotate(-1deg); }
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 0;
+      animation: orbFloat 15s ease-in-out infinite;
+    }
+
+    .orb-1 { width: 350px; height: 350px; background: rgba(0, 242, 254, 0.35); top: -80px; right: -80px; }
+    .orb-2 { width: 250px; height: 250px; background: rgba(250, 112, 154, 0.35); bottom: -80px; left: -80px; animation-delay: 7s; }
+    .orb-3 { width: 180px; height: 180px; background: rgba(79, 172, 254, 0.35); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 3s; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(40px, -40px) scale(1.2); }
+      50% { transform: translate(-20px, -60px) scale(0.9); }
+      75% { transform: translate(-50px, 20px) scale(1.1); }
+    }
+
+    /* Particles */
+    .particles {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    .particle {
+      position: absolute; width: 2px; height: 2px;
+      background: var(--primary); border-radius: 50%;
+      animation: float 6s infinite; opacity: 0.3;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-20px) scale(1.8); opacity: 0.7; }
+    }
+
+    /* Main container */
+    .main-container {
+      position: relative; z-index: 1;
+      max-width: 850px; width: 100%;
+    }
+
+    /* Header */
+    .header {
+      text-align: center; margin-bottom: 1.8rem;
+    }
+    .institute-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: 2px;
+      animation: glowText 3s ease-in-out infinite;
+    }
+    @keyframes glowText {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(0,242,254,0.5)); }
+      50% { filter: drop-shadow(0 0 18px rgba(250,112,154,0.5)); }
+    }
+    .tagline {
+      font-family: 'Rajdhani', sans-serif; color: var(--muted);
+      letter-spacing: 4px; font-size: 0.9rem; margin-top: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    /* Premium Glass Card */
+    .glass-card {
+      background: var(--card-bg); backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--border); border-radius: 2.2rem;
+      padding: clamp(1.5rem, 4vw, 2.8rem);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,242,254,0.1), inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative; overflow: hidden;
+    }
+    .glass-card::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 200%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+      animation: shimmer 8s infinite; pointer-events: none;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; } 100% { left: 100%; }
+    }
+
+    /* Steps */
+    .steps {
+      display: flex; justify-content: space-between;
+      margin-bottom: 2.5rem; position: relative; z-index: 1;
+      gap: 0.5rem;
+    }
+    .step-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.6rem; flex: 1;
+    }
+    .step-circle {
+      width: clamp(38px, 6vw, 48px); height: clamp(38px, 6vw, 48px);
+      border-radius: 50%; background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(1rem, 2vw, 1.2rem); font-weight: 700;
+      transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .step-item.active .step-circle {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: var(--primary); box-shadow: 0 0 25px rgba(0,242,254,0.5);
+      animation: pulse 2s infinite;
+    }
+    .step-item.completed .step-circle {
+      background: var(--success); border-color: var(--success);
+    }
+    @keyframes pulse {
+      0%,100%{box-shadow:0 0 25px rgba(0,242,254,0.5);}
+      50%{box-shadow:0 0 45px rgba(0,242,254,0.8);}
+    }
+    .step-label {
+      font-size: 0.7rem; color: var(--muted); text-transform: uppercase;
+      font-weight: 600; letter-spacing: 1px; text-align: center;
+    }
+
+    /* Form sections */
+    .form-section {
+      display: none; animation: slideIn 0.6s cubic-bezier(0.4,0,0.2,1);
+      position: relative; z-index: 1;
+    }
+    .form-section.active { display: block; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(25px); filter: blur(8px); }
+      to { opacity: 1; transform: translateX(0); filter: blur(0); }
+    }
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600;
+      color: var(--text); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+    .section-title i { color: var(--primary); }
+
+    /* Inputs */
+    .input-group { margin-bottom: 1.4rem; }
+    .input-label {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.8rem; font-weight: 600; color: var(--muted);
+      margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .input-label i { color: var(--primary); width: 16px; }
+    .input-field {
+      width: 100%; background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(255,255,255,0.12); border-radius: 1rem;
+      padding: 1rem 1.2rem; font-size: 1rem; color: var(--text);
+      font-family: 'Space Grotesk', sans-serif; transition: all 0.3s ease;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: var(--primary); box-shadow: 0 0 25px rgba(0,242,254,0.15);
+      background: rgba(255,255,255,0.05);
+    }
+    .input-field::placeholder { color: rgba(255,255,255,0.22); }
+
+    /* Club cards */
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 1rem; margin: 1.2rem 0;
+    }
+    @media (max-width: 480px) {
+      .clubs-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    }
+    .club-card {
+      background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 1.3rem; padding: 1.2rem; cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden;
+    }
+    .club-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.25); }
+    .club-card.selected {
+      border-color: var(--primary); background: rgba(0,242,254,0.1);
+    }
+    .club-card.selected .check-badge { opacity: 1; transform: scale(1); }
+    .check-badge {
+      position: absolute; top: 10px; right: 10px;
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #000; font-weight: bold; font-size: 0.8rem;
+      opacity: 0; transform: scale(0); transition: all 0.3s ease; z-index: 2;
+    }
+    .club-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+    .club-name {
+      font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;
+      font-weight: 600; color: var(--text); margin-bottom: 0.2rem;
+    }
+    .club-desc { font-size: 0.73rem; color: var(--muted); line-height: 1.4; }
+
+    .club-counter {
+      text-align: right; color: var(--primary); font-size: 0.85rem;
+      font-weight: 500; margin-bottom: 0.2rem;
+    }
+
+    /* Terms */
+    .terms-group {
+      display: flex; align-items: flex-start; gap: 0.7rem;
+      margin: 1.5rem 0; background: rgba(255,255,255,0.03);
+      padding: 1rem 1.2rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .terms-group input[type="checkbox"] {
+      width: 20px; height: 20px; accent-color: var(--primary);
+      margin-top: 3px; cursor: pointer; flex-shrink: 0;
+    }
+    .terms-group label { font-size: 0.85rem; color: var(--muted); cursor: pointer; line-height: 1.6; }
+    .terms-group label strong { color: var(--text); }
+
+    /* Buttons */
+    .btn {
+      padding: 0.9rem 1.8rem; border-radius: 1rem; font-weight: 600;
+      font-size: 0.95rem; font-family: 'Rajdhani', sans-serif;
+      text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer;
+      transition: all 0.3s ease; border: none; outline: none;
+      display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #000; font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,242,254,0.3);
+      width: 100%; font-size: 1rem;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0,242,254,0.5);
+    }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-outline {
+      background: transparent; border: 2px solid rgba(255,255,255,0.2);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); }
+    .btn-group { display: flex; gap: 0.8rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+    /* Admin Export */
+    .admin-section {
+      margin-top: 1.8rem; padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .admin-title {
+      font-family: 'Rajdhani', sans-serif; color: var(--muted);
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 1rem; text-align: center;
+    }
+    .btn-export {
+      background: linear-gradient(135deg, var(--gold), #f0932b);
+      color: #000; font-weight: 700;
+      box-shadow: 0 8px 25px rgba(245,175,25,0.3);
+      width: 100%;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 0.9rem 1.1rem; border-radius: 1rem; margin: 0.8rem 0;
+      display: flex; align-items: center; gap: 0.7rem;
+      animation: slideDown 0.4s ease; font-weight: 500; font-size: 0.85rem;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .alert-success { background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); color: var(--success); }
+    .alert-error { background: rgba(255,23,68,0.1); border: 1px solid rgba(255,23,68,0.3); color: var(--error); }
+    .alert-info { background: rgba(0,242,254,0.1); border: 1px solid rgba(0,242,254,0.3); color: var(--primary); }
+
+    /* Spinner */
+    .spinner {
+      width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.3);
+      border-top-color: #000; border-radius: 50%;
+      animation: spin 0.8s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-primary.loading .btn-text { display: none; }
+    .btn-primary.loading .spinner { display: inline-block; }
+
+    /* Success Modal */
+    .success-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .success-modal {
+      background: var(--card-bg); border: 2px solid var(--success);
+      border-radius: 2.2rem; padding: 2.5rem;
+      max-width: 500px; width: 90%; text-align: center;
+      animation: scaleIn 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .success-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--success), #00c853);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 1.5rem;
+      font-size: 2.5rem; color: white;
+      animation: bounce 0.7s ease;
+    }
+    @keyframes bounce {
+      0%,100%{transform:scale(1);} 50%{transform:scale(1.12);}
+    }
+    .reg-details {
+      background: rgba(0,0,0,0.3); border-radius: 1.2rem;
+      padding: 1.2rem; margin: 1.2rem 0; text-align: left;
+    }
+    .detail-row {
+      display: flex; justify-content: space-between; padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;
+    }
+    .detail-label { color: var(--muted); font-size: 0.8rem; }
+    .detail-value { color: var(--text); font-weight: 600; font-size: 0.85rem; }
+
+    /* Admin Modal */
+    .admin-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .admin-modal {
+      background: var(--card-bg); border: 2px solid var(--gold);
+      border-radius: 1.8rem; padding: 2rem;
+      max-width: 400px; width: 90%; text-align: center;
+      animation: scaleIn 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @media (max-width: 600px) {
+      .glass-card { padding: 1.3rem; border-radius: 1.8rem; }
+      .steps { gap: 0.3rem; }
+      .btn-group { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
+  <div class="mesh-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="particles" id="particles"></div>
 
-<div class="bg-animation"></div>
-
-<div class="password-gate" id="passwordGate">
-    <div class="gate-card">
-        <h2>VVIT CLUB ACCESS</h2>
-        <p>Enter council credentials to proceed</p>
-        <input type="password" class="gate-input" id="gatePassword" placeholder="••••••••••" onkeypress="if(event.key==='Enter')checkPassword()">
-        <div class="gate-error" id="gateError">ACCESS DENIED</div>
-        <button class="btn-gate" onclick="checkPassword()">AUTHENTICATE</button>
-    </div>
-</div>
-
-<div class="container" id="mainContainer" style="display: none;">
+  <div class="main-container">
     <div class="header">
-        <h1>VIJAYA VITTALA INSTITUTE OF TECHNOLOGY</h1>
-        <div class="subtitle">CLUB REGISTRATION PORTAL</div>
-        <div class="location">BENGALURU - 77</div>
+      <div class="institute-name">VIJAYA VITTALA INSTITUTE OF TECHNOLOGY</div>
+      <div class="tagline">✦ Elite Club Registration 2026 ✦</div>
     </div>
 
-    <div class="progress-bar" id="progressBar">
-        <div class="progress-fill" id="progressFill"></div>
-        <div class="step active" data-step="1"><div class="step-circle">1</div><div class="step-label">Identity</div></div>
-        <div class="step" data-step="2"><div class="step-circle">2</div><div class="step-label">Academic</div></div>
-        <div class="step" data-step="3"><div class="step-circle">3</div><div class="step-label">Clubs</div></div>
-        <div class="step" data-step="4"><div class="step-circle">4</div><div class="step-label">Activities</div></div>
-        <div class="step" data-step="5"><div class="step-circle">5</div><div class="step-label">Confirm</div></div>
-    </div>
-
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">TRANSMITTING DATA...</div>
-    </div>
-
-    <!-- Already Registered Screen -->
-    <div class="already-registered" id="alreadyRegistered">
-        <div class="success-icon">⚠️</div>
-        <h2>ALREADY REGISTERED</h2>
-        <p>This USN or Email has already been registered. Each student can only register once.</p>
-        <div class="success-details">
-            <p><strong>Registered USN:</strong> <span id="regUSN">-</span></p>
-            <p><strong>Registered Email:</strong> <span id="regEmail">-</span></p>
-            <p style="color:var(--neon-green);margin-top:15px;">Contact Student Council if you need to modify your registration.</p>
+    <div class="glass-card">
+      <div class="steps">
+        <div class="step-item active" id="step1">
+          <div class="step-circle"><i class="fas fa-lock"></i></div>
+          <div class="step-label">Access</div>
         </div>
-        <button type="button" class="btn-reset" onclick="resetForm()">New Registration</button>
-    </div>
-
-    <div class="form-container">
-        <form id="registrationForm">
-            <!-- Step 1 -->
-            <div class="form-section active" data-section="1">
-                <h2>Identity Verification</h2>
-                <div class="form-group">
-                    <label class="required">Full Name</label>
-                    <input type="text" id="fullName" placeholder="Enter your full name">
-                    <div class="error-message">Required field</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">USN</label>
-                    <input type="text" id="studentId" placeholder="e.g., 1VV20CS001">
-                    <div class="error-message">Required field</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Email</label>
-                    <input type="email" id="email" placeholder="your.email@vvit.edu">
-                    <div class="error-message">Valid email required</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Phone</label>
-                    <input type="tel" id="phone" placeholder="(123) 456-7890">
-                    <div class="error-message">Valid phone required</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Date of Birth</label>
-                    <input type="date" id="dob">
-                    <div class="error-message">Required field</div>
-                </div>
-                <div class="button-group"><div></div><button type="button" class="btn-next" onclick="nextStep()">Next →</button></div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="form-section" data-section="2">
-                <h2>Academic Profile</h2>
-                <div class="form-group">
-                    <label class="required">Branch / Department</label>
-                    <input type="text" id="branch" placeholder="e.g., Computer Science, ECE, Mechanical...">
-                    <div class="error-message">Required field</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Year</label>
-                    <div class="radio-group">
-                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="1st Year" hidden><span>1st Year</span></div>
-                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="2nd Year" hidden><span>2nd Year</span></div>
-                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="3rd Year" hidden><span>3rd Year</span></div>
-                        <div class="radio-item" onclick="selectRadio(this,'year')"><input type="radio" name="year" value="4th Year" hidden><span>4th Year</span></div>
-                    </div>
-                    <div class="error-message" id="yearError">Select your year</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Section</label>
-                    <input type="text" id="section" placeholder="e.g., A, B, C">
-                    <div class="error-message">Required field</div>
-                </div>
-                <div class="form-group">
-                    <label class="required">Graduation Year</label>
-                    <input type="number" id="graduation" min="2024" max="2030" placeholder="e.g., 2027">
-                    <div class="error-message">Valid year required</div>
-                </div>
-                <div class="button-group">
-                    <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
-                    <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
-                </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="form-section" data-section="3">
-                <h2>Club Selection</h2>
-                <div class="min-clubs-notice">⚡ PROTOCOL: Select minimum 2 clubs</div>
-
-                <div class="club-section" id="club-techno">
-                    <div class="club-header">
-                        <div class="club-icon">💻</div>
-                        <div class="club-title-group"><div class="club-name">TechnoVerse</div><div class="club-tagline">Technology & Innovation</div></div>
-                        <button type="button" class="club-select-btn" onclick="toggleClub('techno','TechnoVerse')">Select</button>
-                    </div>
-                    <input type="checkbox" name="clubs" value="TechnoVerse" hidden>
-                </div>
-
-                <div class="club-section" id="club-vvei">
-                    <div class="club-header">
-                        <div class="club-icon">📹</div>
-                        <div class="club-title-group"><div class="club-name">VVEI</div><div class="club-tagline">Media Operations</div></div>
-                        <button type="button" class="club-select-btn" onclick="toggleClub('vvei','VVEI')">Select</button>
-                    </div>
-                    <input type="checkbox" name="clubs" value="VVEI" hidden>
-                </div>
-
-                <div class="club-section" id="club-roundtable">
-                    <div class="club-header">
-                        <div class="club-icon">🎤</div>
-                        <div class="club-title-group"><div class="club-name">The VVIT RoundTable</div><div class="club-tagline">Debate & Discourse</div></div>
-                        <button type="button" class="club-select-btn" onclick="toggleClub('roundtable','The VVIT RoundTable')">Select</button>
-                    </div>
-                    <input type="checkbox" name="clubs" value="The VVIT RoundTable" hidden>
-                </div>
-
-                <div class="club-section" id="club-vonfloor">
-                    <div class="club-header">
-                        <div class="club-icon">🎭</div>
-                        <div class="club-title-group"><div class="club-name">V'onFLOOR</div><div class="club-tagline">Cultural & Performing Arts</div></div>
-                        <button type="button" class="club-select-btn" onclick="toggleClub('vonfloor','V\'onFLOOR')">Select</button>
-                    </div>
-                    <input type="checkbox" name="clubs" value="V'onFLOOR" hidden>
-                </div>
-
-                <div class="error-message" id="clubError" style="text-align:center;margin-top:15px;">⚠️ Minimum 2 clubs required</div>
-                <div class="button-group">
-                    <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
-                    <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
-                </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="form-section" data-section="4">
-                <h2>Activity Configuration</h2>
-
-                <div class="club-section" id="act-techno" style="display:none;">
-                    <div class="club-header"><div class="club-icon">💻</div><div class="club-title-group"><div class="club-name">TechnoVerse Modules</div></div></div>
-                    <div class="activities-list show">
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Hackathon/Ideathon" hidden>🏆 Hackathon/Ideathon</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Buildthon" hidden>🔨 Buildthon</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Code & Decode" hidden>🔐 Code & Decode</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Technomaze Think" hidden>🧩 Technomaze Think</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Research Paper" hidden>📄 Research Paper</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="LeetCode Solving" hidden>⚡ LeetCode Solving</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="App Building" hidden>📱 App Building</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Tech Math" hidden>🔢 Tech Math</div>
-                    </div>
-                </div>
-
-                <div class="club-section" id="act-vvei" style="display:none;">
-                    <div class="club-header"><div class="club-icon">📹</div><div class="club-title-group"><div class="club-name">VVEI Modules</div></div></div>
-                    <div class="activities-list show">
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="College Promotions" hidden>📢 College Promotions</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Insta Handle" hidden>📸 Insta Handle</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Branding & Content" hidden>✨ Branding & Content</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Sound Handling" hidden>🔊 Sound Handling</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Student Interviews" hidden>🎙️ Student Interviews</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Faculty Features" hidden>👨‍🏫 Faculty Features</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Documentaries" hidden>🎬 Documentaries</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Photo Shoot" hidden>📷 Photo Shoot</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Editing" hidden>✂️ Editing</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Website Management" hidden>🌐 Website Management</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="College Magazine" hidden>📰 College Magazine</div>
-                    </div>
-                </div>
-
-                <div class="club-section" id="act-roundtable" style="display:none;">
-                    <div class="club-header"><div class="club-icon">🎤</div><div class="club-title-group"><div class="club-name">RoundTable Modules</div></div></div>
-                    <div class="activities-list show">
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Heavy Tech Debates" hidden>⚔️ Heavy Tech Debates</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Rapid Fire Rounds" hidden>⚡ Rapid Fire Rounds</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Case Study Battle" hidden>📊 Case Study Battle</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Just A Minute" hidden>⏱️ Just A Minute</div>
-                    </div>
-                </div>
-
-                <div class="club-section" id="act-vonfloor" style="display:none;">
-                    <div class="club-header"><div class="club-icon">🎭</div><div class="club-title-group"><div class="club-name">V'onFLOOR Modules</div></div></div>
-                    <div class="activities-list show">
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Music" hidden>🎵 Music</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Dance" hidden>💃 Dance</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Drawing" hidden>🎨 Drawing</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Mimic" hidden>🎭 Mimic</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Acting" hidden>🎬 Acting</div>
-                        <div class="activity-tag" onclick="toggleActivity(this)"><input type="checkbox" name="activities" value="Hosting of Events" hidden>🎤 Hosting</div>
-                    </div>
-                </div>
-
-                <div class="error-message" id="activityError" style="text-align:center;margin-top:15px;">⚠️ Select at least one activity</div>
-
-                <div class="form-group" style="margin-top:25px;">
-                    <label>Mission Statement</label>
-                    <textarea id="motivation" placeholder="Your objectives..." maxlength="500"></textarea>
-                    <div class="char-count">0 / 500</div>
-                </div>
-
-                <div class="button-group">
-                    <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
-                    <button type="button" class="btn-next" onclick="nextStep()">Next →</button>
-                </div>
-            </div>
-
-            <!-- Step 5 -->
-            <div class="form-section" data-section="5">
-                <h2>Final Verification</h2>
-
-                <div class="summary-card">
-                    <h3>Identity Data</h3>
-                    <div class="summary-item"><span class="summary-label">Name</span><span class="summary-value" id="sumName">-</span></div>
-                    <div class="summary-item"><span class="summary-label">USN</span><span class="summary-value" id="sumId">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Email</span><span class="summary-value" id="sumEmail">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Phone</span><span class="summary-value" id="sumPhone">-</span></div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Academic Data</h3>
-                    <div class="summary-item"><span class="summary-label">Branch</span><span class="summary-value" id="sumBranch">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Year</span><span class="summary-value" id="sumYear">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Section</span><span class="summary-value" id="sumSection">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Graduation</span><span class="summary-value" id="sumGrad">-</span></div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Club Assignment</h3>
-                    <div class="summary-item"><span class="summary-label">Clubs</span><span class="summary-value" id="sumClubs">-</span></div>
-                    <div class="summary-item"><span class="summary-label">Activities</span><span class="summary-value" id="sumActivities">-</span></div>
-                </div>
-
-                <div class="form-group" style="margin-top:25px;">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)" style="width:100%;">
-                        <input type="checkbox" id="terms" hidden>
-                        <span>I confirm all data is accurate and agree to VVIT Club protocols.</span>
-                    </div>
-                    <div class="error-message" id="termsError">Authorization required</div>
-                </div>
-
-                <div class="button-group">
-                    <button type="button" class="btn-prev" onclick="prevStep()">← Prev</button>
-                    <button type="button" class="btn-submit" onclick="submitForm()">Transmit ✓</button>
-                </div>
-            </div>
-        </form>
-
-        <div class="success-screen" id="successScreen">
-            <div class="success-icon">🎉</div>
-            <h2>Transmission Complete</h2>
-            <p>Registration successful. Confirmation sent to your email.</p>
-            <div class="success-details">
-                <h3>Mission Log</h3>
-                <p><strong>Ref ID:</strong> <span id="refId">-</span></p>
-                <p><strong>Timestamp:</strong> <span id="submitDate">-</span></p>
-                <p><strong>Clubs:</strong> <span id="sClubs">-</span></p>
-                <p><strong>Modules:</strong> <span id="sActivities">-</span></p>
-                <p style="color:var(--neon-green);margin-top:15px;">✓ Data archived to central database</p>
-                <p style="color:var(--neon-green);">✓ Confirmation signal transmitted to your email</p>
-            </div>
-            <button type="button" class="btn-reset" onclick="resetForm()">New Registration</button>
+        <div class="step-item" id="step2">
+          <div class="step-circle"><i class="fas fa-user"></i></div>
+          <div class="step-label">Profile</div>
         </div>
-    </div>
-</div>
+        <div class="step-item" id="step3">
+          <div class="step-circle"><i class="fas fa-star"></i></div>
+          <div class="step-label">Clubs</div>
+        </div>
+      </div>
 
-<script>
-    // ============================================
-    // CONFIGURATION - UPDATE GOOGLE SCRIPT URL!
-    // ============================================
-    const EMAILJS_SERVICE_ID = 'service_vvit2009';
-    const EMAILJS_TEMPLATE_ID = 'template_fkfp5ns';
-    const EMAILJS_PUBLIC_KEY = '3jggm3MsvGgZEWx0a';
+      <form id="registrationForm">
+        <div class="form-section active" id="section1">
+          <div class="section-title"><i class="fas fa-shield-halved"></i> Secure Access</div>
+          <div class="input-group">
+            <label class="input-label"><i class="fas fa-key"></i> Institute Password</label>
+            <input type="password" class="input-field" id="accessPassword" placeholder="Enter access password" autocomplete="off">
+          </div>
+          <div id="passwordMessage"></div>
+          <button type="button" class="btn btn-primary" onclick="verifyAccess()">
+            <i class="fas fa-arrow-right"></i> VERIFY & PROCEED
+          </button>
+        </div>
 
-    // ⚠️ REPLACE THIS WITH YOUR NEW GOOGLE SCRIPT URL AFTER REDEPLOYING
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQXsmLqSTxjMhq7QAH3iyCwvyFRb_yCbtXTGnG7-GekgLxuohAtcAC09Nc46f5A094GA/exec';
+        <div class="form-section" id="section2">
+          <div class="section-title"><i class="fas fa-id-card"></i> Student Profile</div>
+          <div class="input-group">
+            <label class="input-label"><i class="fas fa-envelope"></i> College Email Address</label>
+            <input type="email" class="input-field" id="studentEmail" placeholder="your.name@vvit.edu.in">
+          </div>
+          <div class="input-group">
+            <label class="input-label"><i class="fas fa-user-graduate"></i> Full Name</label>
+            <input type="text" class="input-field" id="fullName" placeholder="Enter your complete name">
+          </div>
+          <div class="input-group">
+            <label class="input-label"><i class="fas fa-building-columns"></i> Branch / Department</label>
+            <input type="text" class="input-field" id="branchName" placeholder="e.g., Computer Science & Engineering">
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn btn-primary" onclick="validateProfile()">Continue <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
 
-    const CLUB_PASSWORD = 'VVIT@STUDENT';
-    // ============================================
+        <div class="form-section" id="section3">
+          <div class="section-title"><i class="fas fa-users"></i> Choose Your Clubs</div>
+          <div class="club-counter">Selected: <strong id="clubCount" style="color:var(--primary);">0</strong> / Minimum 2</div>
+          <div class="clubs-grid" id="clubsGrid"></div>
+          <div id="clubMessage"></div>
 
-    let currentStep = 1;
-    const totalSteps = 5;
-    let selectedClubs = [];
+          <div class="terms-group">
+            <input type="checkbox" id="termsCheckbox">
+            <label for="termsCheckbox">
+              I confirm that I am a <strong>VVIT student</strong> and agree to abide by all club rules and regulations.
+            </label>
+          </div>
 
-    // Store registered USNs and Emails (simulated database)
-    // In production, this should check against the Google Sheet
-    let registeredUSNs = JSON.parse(localStorage.getItem('vvit_registered_usns') || '[]');
-    let registeredEmails = JSON.parse(localStorage.getItem('vvit_registered_emails') || '[]');
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <span class="btn-text"><i class="fas fa-paper-plane"></i> COMPLETE REGISTRATION</span>
+              <span class="spinner"></span>
+            </button>
+          </div>
+        </div>
+      </form>
 
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-
-    function checkPassword() {
-        const input = document.getElementById('gatePassword').value;
-        const error = document.getElementById('gateError');
-
-        if (input === CLUB_PASSWORD) {
-            document.getElementById('passwordGate').classList.add('hidden');
-            document.getElementById('mainContainer').style.display = 'block';
-        } else {
-            error.classList.add('show');
-            document.getElementById('gatePassword').value = '';
-        }
-    }
-
-    document.getElementById('motivation').addEventListener('input', function() {
-        this.nextElementSibling.textContent = this.value.length + ' / 500';
-    });
-
-    function updateProgress() {
-        const fill = document.getElementById('progressFill');
-        fill.style.width = ((currentStep - 1) / (totalSteps - 1)) * 100 + '%';
-
-        document.querySelectorAll('.step').forEach((step, i) => {
-            const num = i + 1;
-            step.classList.remove('active', 'completed');
-            if (num === currentStep) step.classList.add('active');
-            else if (num < currentStep) {
-                step.classList.add('completed');
-                step.querySelector('.step-circle').textContent = '✓';
-            } else {
-                step.querySelector('.step-circle').textContent = num;
-            }
-        });
-    }
-
-    function showSection(step) {
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
-        if (step === 4) showActivities();
-        if (step === 5) updateSummary();
-        updateProgress();
-        window.scrollTo(0, 0);
-    }
-
-    function toggleClub(id, name) {
-        const section = document.getElementById('club-' + id);
-        const btn = section.querySelector('.club-select-btn');
-        const cb = section.querySelector('input[name="clubs"]');
-
-        if (selectedClubs.includes(name)) {
-            selectedClubs = selectedClubs.filter(c => c !== name);
-            section.classList.remove('selected-club');
-            btn.textContent = 'Select';
-            btn.classList.remove('selected');
-            cb.checked = false;
-        } else {
-            selectedClubs.push(name);
-            section.classList.add('selected-club');
-            btn.textContent = 'Selected ✓';
-            btn.classList.add('selected');
-            cb.checked = true;
-        }
-        document.getElementById('clubError').classList.remove('show');
-    }
-
-    function showActivities() {
-        const map = { 'TechnoVerse': 'act-techno', 'VVEI': 'act-vvei', 'The VVIT RoundTable': 'act-roundtable', 'V\'onFLOOR': 'act-vonfloor' };
-        Object.values(map).forEach(id => document.getElementById(id).style.display = 'none');
-        selectedClubs.forEach(club => {
-            if (map[club]) document.getElementById(map[club]).style.display = 'block';
-        });
-    }
-
-    function toggleActivity(el) {
-        el.classList.toggle('selected');
-        el.querySelector('input').checked = !el.querySelector('input').checked;
-        if (document.querySelectorAll('input[name="activities"]:checked').length > 0) {
-            document.getElementById('activityError').classList.remove('show');
-        }
-    }
-
-    function selectRadio(el, name) {
-        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
-            inp.closest('.radio-item').classList.remove('selected');
-        });
-        el.classList.add('selected');
-        el.querySelector('input').checked = true;
-    }
-
-    function toggleCheckbox(el) {
-        el.classList.toggle('selected');
-        el.querySelector('input').checked = !el.querySelector('input').checked;
-    }
-
-    function validateStep(step) {
-        let valid = true;
-
-        if (step === 1) {
-            ['fullName','studentId','email','phone','dob'].forEach(id => {
-                const el = document.getElementById(id);
-                const err = el.nextElementSibling;
-                if (!el.value.trim() || (id === 'email' && !el.value.includes('@')) || (id === 'phone' && el.value.length < 10)) {
-                    el.classList.add('error');
-                    err.classList.add('show');
-                    valid = false;
-                } else {
-                    el.classList.remove('error');
-                    err.classList.remove('show');
-                }
-            });
-        }
-
-        if (step === 2) {
-            ['branch','section','graduation'].forEach(id => {
-                const el = document.getElementById(id);
-                if (!el.value.trim()) {
-                    el.classList.add('error');
-                    el.nextElementSibling.classList.add('show');
-                    valid = false;
-                } else {
-                    el.classList.remove('error');
-                    el.nextElementSibling.classList.remove('show');
-                }
-            });
-            if (!document.querySelector('input[name="year"]:checked')) {
-                document.getElementById('yearError').classList.add('show');
-                valid = false;
-            } else {
-                document.getElementById('yearError').classList.remove('show');
-            }
-        }
-
-        if (step === 3) {
-            if (selectedClubs.length < 2) {
-                document.getElementById('clubError').classList.add('show');
-                valid = false;
-            } else {
-                document.getElementById('clubError').classList.remove('show');
-            }
-        }
-
-        if (step === 4) {
-            if (document.querySelectorAll('input[name="activities"]:checked').length === 0) {
-                document.getElementById('activityError').classList.add('show');
-                valid = false;
-            } else {
-                document.getElementById('activityError').classList.remove('show');
-            }
-        }
-
-        if (step === 5) {
-            if (!document.getElementById('terms').checked) {
-                document.getElementById('termsError').classList.add('show');
-                valid = false;
-            } else {
-                document.getElementById('termsError').classList.remove('show');
-            }
-        }
-
-        return valid;
-    }
-
-    function nextStep() {
-        if (validateStep(currentStep) && currentStep < totalSteps) {
-            currentStep++;
-            showSection(currentStep);
-        }
-    }
-
-    function prevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            showSection(currentStep);
-        }
-    }
-
-    function updateSummary() {
-        document.getElementById('sumName').textContent = document.getElementById('fullName').value || '-';
-        document.getElementById('sumId').textContent = document.getElementById('studentId').value || '-';
-        document.getElementById('sumEmail').textContent = document.getElementById('email').value || '-';
-        document.getElementById('sumPhone').textContent = document.getElementById('phone').value || '-';
-        document.getElementById('sumBranch').textContent = document.getElementById('branch').value || '-';
-
-        const year = document.querySelector('input[name="year"]:checked');
-        document.getElementById('sumYear').textContent = year ? year.value : '-';
-
-        document.getElementById('sumSection').textContent = document.getElementById('section').value || '-';
-        document.getElementById('sumGrad').textContent = document.getElementById('graduation').value || '-';
-        document.getElementById('sumClubs').textContent = selectedClubs.join(', ') || '-';
-
-        const acts = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
-        document.getElementById('sumActivities').textContent = acts.join(', ') || '-';
-    }
-
-    function collectData() {
-        const acts = Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(c => c.value);
-        const year = document.querySelector('input[name="year"]:checked');
-
-        return {
-            fullName: document.getElementById('fullName').value,
-            studentId: document.getElementById('studentId').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            dob: document.getElementById('dob').value,
-            branch: document.getElementById('branch').value,
-            year: year ? year.value : '',
-            section: document.getElementById('section').value,
-            graduation: document.getElementById('graduation').value,
-            clubs: selectedClubs.join(', '),
-            activities: acts.join(', '),
-            motivation: document.getElementById('motivation').value || ''
-        };
-    }
-
-    async function submitForm() {
-        if (!validateStep(5)) return;
-
-        const data = collectData();
-        const usn = data.studentId.toUpperCase().trim();
-        const email = data.email.toLowerCase().trim();
-
-        // Check if already registered (using localStorage for demo - in production check Google Sheet)
-        if (registeredUSNs.includes(usn) || registeredEmails.includes(email)) {
-            document.getElementById('regUSN').textContent = usn;
-            document.getElementById('regEmail').textContent = email;
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('progressBar').style.display = 'none';
-            document.querySelector('.header').style.display = 'none';
-            document.getElementById('alreadyRegistered').classList.add('active');
-            return;
-        }
-
-        document.getElementById('loadingOverlay').classList.add('active');
-
-        const refId = 'VVIT-' + Date.now().toString(36).toUpperCase();
-        const now = new Date().toLocaleString();
-
-        try {
-            // Save to Google Sheet
-            const sheetResponse = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            console.log('Sheet response:', sheetResponse);
-
-            // Send Email to STUDENT (to_email is the student's email)
-            const emailResult = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                to_email: data.email,  // This sends TO the student who registered
-                refId: refId,
-                fullName: data.fullName,
-                studentId: data.studentId,
-                clubs: data.clubs,
-                activities: data.activities,
-                reply_to: 'noreply@vvit.edu'
-            });
-
-            console.log('Email sent:', emailResult);
-
-            // Store in localStorage to prevent duplicate registration
-            registeredUSNs.push(usn);
-            registeredEmails.push(email);
-            localStorage.setItem('vvit_registered_usns', JSON.stringify(registeredUSNs));
-            localStorage.setItem('vvit_registered_emails', JSON.stringify(registeredEmails));
-
-            // Show success
-            document.getElementById('refId').textContent = refId;
-            document.getElementById('submitDate').textContent = now;
-            document.getElementById('sClubs').textContent = data.clubs;
-            document.getElementById('sActivities').textContent = data.activities;
-
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('progressBar').style.display = 'none';
-            document.querySelector('.header').style.display = 'none';
-            document.getElementById('successScreen').classList.add('active');
-
-        } catch (err) {
-            console.error('Error:', err);
-            alert('Transmission failed: ' + err.message + '\nPlease check console for details.');
-        } finally {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
-    }
-
-    function resetForm() {
-        document.getElementById('registrationForm').reset();
-        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-        document.querySelectorAll('.selected-club').forEach(el => el.classList.remove('selected-club'));
-        document.querySelectorAll('.club-select-btn').forEach(btn => {
-            btn.textContent = 'Select';
-            btn.classList.remove('selected');
-        });
-        document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-        document.querySelectorAll('.show').forEach(el => el.classList.remove('show'));
-
-        selectedClubs = [];
-        currentStep = 1;
-
-        document.getElementById('registrationForm').style.display = 'block';
-        document.getElementById('progressBar').style.display = 'flex';
-        document.querySelector('.header').style.display = 'block';
-        document.getElementById('successScreen').classList.remove('active');
-        document.getElementById('alreadyRegistered').classList.remove('active');
-
-        showSection(1);
-    }
-
-    document.querySelectorAll('input, textarea').forEach(el => {
-        el.addEventListener('input', function() {
-            this.classList.remove('error');
-            const err = this.nextElementSibling;
-            if (err && err.classList.contains('error-message')) err.classList.remove('show');
-        });
-    });
-
-    document.querySelectorAll('.step').forEach(step => {
-        step.addEventListener('click', function() {
-            const num = parseInt(this.dataset.step);
-            if (num < currentStep) {
-                currentStep = num;
-                showSection(currentStep);
-            }
-        });
-    });
-
-    updateProgress();
-</script>
-
-</body>
-</html>
+      <!-- Admin Export Button -->
+      <div class="admin-section">
+        <div class="admin-title"><i class="fas fa-shield-alt"></i> Admin Only</div>
+        <button class="btn btn-export" onclick="showAdminModal()">
+          <i class="fas fa-download"></i> EXPORT REGISTRATIONS
+        </b
