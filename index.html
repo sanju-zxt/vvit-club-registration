@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +26,6 @@
       --muted: #8892b0;
       --success: #00e676;
       --error: #ff1744;
-      --neon-glow: 0 0 20px rgba(0, 242, 254, 0.4);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,7 +42,6 @@
       overflow-x: hidden;
     }
 
-    /* Animated Grid Background */
     .grid-bg {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
       background-image: 
@@ -59,12 +58,11 @@
       100% { background-position: 50px 50px; }
     }
 
-    /* Neon orbs */
     .orb {
       position: fixed; border-radius: 50%; filter: blur(100px);
       opacity: 0.25; z-index: 0; animation: orbFloat 20s ease-in-out infinite;
     }
-    .orb-1 { width: 500px; height: 500px; background: rgba(0,242,254,0.35); top: -150px; right: -150px; animation-delay: 0s; }
+    .orb-1 { width: 500px; height: 500px; background: rgba(0,242,254,0.35); top: -150px; right: -150px; }
     .orb-2 { width: 400px; height: 400px; background: rgba(250,112,154,0.3); bottom: -150px; left: -150px; animation-delay: 5s; }
     .orb-3 { width: 300px; height: 300px; background: rgba(79,172,254,0.3); top: 40%; left: 60%; animation-delay: 10s; }
     .orb-4 { width: 250px; height: 250px; background: rgba(245,175,25,0.25); top: 20%; left: 20%; animation-delay: 15s; }
@@ -75,7 +73,6 @@
       75% { transform: translate(-70px, 30px) scale(1.15); }
     }
 
-    /* Floating particles */
     .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
     .particle {
       position: absolute; width: 3px; height: 3px;
@@ -90,7 +87,6 @@
       100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
     }
 
-    /* LOGIN PAGE */
     .login-container {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--darker); z-index: 2000;
@@ -133,10 +129,6 @@
       border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.03);
       color: var(--text); transition: all 0.3s; cursor: default;
     }
-    .tag:hover {
-      border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.3);
-      transform: translateY(-2px);
-    }
     .tag:nth-child(1):hover { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.4); }
     .tag:nth-child(2):hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(250,112,154,0.4); }
     .tag:nth-child(3):hover { border-color: var(--gold); box-shadow: 0 0 15px rgba(245,175,25,0.4); }
@@ -159,7 +151,6 @@
     .btn-enter:hover { transform: translateY(-3px); box-shadow: 0 20px 60px rgba(0,242,254,0.6); }
     .btn-enter:hover::before { left: 100%; }
 
-    /* MAIN CONTENT */
     .main-container {
       position: relative; z-index: 1; max-width: 950px; width: 100%; display: none;
     }
@@ -451,8 +442,8 @@
         <div class="form-section active" id="section1">
           <div class="section-title"><i class="fas fa-id-card"></i> Student Profile</div>
           <div class="input-group">
-            <label class="input-label"><i class="fas fa-envelope"></i> Email</label>
-            <input type="email" class="input-field" id="studentEmail" placeholder="your.name@gmail.com">
+            <label class="input-label"><i class="fas fa-envelope"></i> College Email</label>
+            <input type="email" class="input-field" id="studentEmail" placeholder="your.name@vvit.edu.in">
           </div>
           <div class="input-group">
             <label class="input-label"><i class="fas fa-user-graduate"></i> Full Name</label>
@@ -496,8 +487,40 @@
     </div>
   </div>
 
-  <div class="admin-trigger" id="adminTrigger" onclick="showAdminModal()">
+  <!-- Hidden Admin Trigger (shield icon) -->
+  <div class="admin-trigger" id="adminTrigger" onclick="showAdminLogin()">
     <i class="fas fa-shield-halved"></i>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="modal-overlay" id="adminLoginModal">
+    <div class="modal-box modal-admin">
+      <div class="icon-circle icon-admin"><i class="fas fa-lock"></i></div>
+      <h3 style="color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:1.6rem;">Admin Access</h3>
+      <p style="color:var(--muted);margin:0.8rem 0;font-size:0.85rem;">Enter admin password to continue</p>
+      <input type="password" class="input-field" id="adminPasswordInput" placeholder="Enter admin password" style="margin-bottom:1rem;">
+      <div id="adminLoginMsg"></div>
+      <div style="display:flex;gap:0.7rem;">
+        <button class="btn btn-outline" onclick="closeAdminLogin()" style="flex:1;">Cancel</button>
+        <button class="btn btn-primary" onclick="verifyAdminPassword()" style="flex:1;background:linear-gradient(135deg,var(--gold),#f0932b);">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Panel Modal -->
+  <div class="modal-overlay" id="adminPanelModal">
+    <div class="modal-box modal-admin">
+      <div class="icon-circle icon-admin"><i class="fas fa-crown"></i></div>
+      <h3 style="color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:1.6rem;">Admin Panel</h3>
+      <div class="stats-row" style="margin:1rem 0;">
+        <div class="stat-box"><div class="stat-num" id="adminTotal">0</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-box"><div class="stat-num" id="adminToday">0</div><div class="stat-lbl">Today</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="exportCSV()" style="margin-bottom:0.6rem;background:linear-gradient(135deg,var(--gold),#f0932b);">
+        <i class="fas fa-download"></i> EXPORT CSV
+      </button>
+      <button class="btn btn-outline" onclick="closeAdminPanel()">CLOSE</button>
+    </div>
   </div>
 
   <!-- Success Modal -->
@@ -508,22 +531,6 @@
       <p style="color:var(--muted);margin:0.5rem 0;font-size:0.85rem;">Thank you for supporting VVIT clubs!</p>
       <div class="detail-box" id="regDetails"></div>
       <button class="btn btn-primary" onclick="closeSuccessModal()">DONE</button>
-    </div>
-  </div>
-
-  <!-- Admin Modal -->
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal-box modal-admin">
-      <div class="icon-circle icon-admin"><i class="fas fa-crown"></i></div>
-      <h3 style="color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:1.6rem;">Admin Panel</h3>
-      <div class="stats-row" style="margin:1rem 0;">
-        <div class="stat-box"><div class="stat-num" id="adminTotal">0</div><div class="stat-lbl">Total</div></div>
-        <div class="stat-box"><div class="stat-num" id="adminToday">0</div><div class="stat-lbl">Today</div></div>
-      </div>
-      <button class="btn btn-primary" onclick="exportCSV()" style="margin-bottom:0.6rem;">
-        <i class="fas fa-download"></i> EXPORT CSV
-      </button>
-      <button class="btn btn-outline" onclick="closeAdminModal()">CLOSE</button>
     </div>
   </div>
 
@@ -538,6 +545,9 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // 🔒 ADMIN PASSWORD - Change this to your secret password
+    const ADMIN_PASSWORD = "VVIT@ADMIN05";
 
     const CLUBS = [
       { id: 'technoverse', name: 'TechnoVerse', emoji: '💻', desc: 'Tech • Hackathons • AI/ML' },
@@ -701,8 +711,35 @@
       goToStep(1);
     }
 
-    function showAdminModal() { document.getElementById('adminModal').style.display = 'flex'; updateStats(); }
-    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+    // 🔒 ADMIN FUNCTIONS WITH PASSWORD PROTECTION
+    function showAdminLogin() {
+      document.getElementById('adminLoginModal').style.display = 'flex';
+      document.getElementById('adminPasswordInput').value = '';
+      document.getElementById('adminLoginMsg').innerHTML = '';
+    }
+
+    function closeAdminLogin() {
+      document.getElementById('adminLoginModal').style.display = 'none';
+    }
+
+    function verifyAdminPassword() {
+      const pw = document.getElementById('adminPasswordInput').value;
+      if (pw === ADMIN_PASSWORD) {
+        closeAdminLogin();
+        showAdminPanel();
+      } else {
+        document.getElementById('adminLoginMsg').innerHTML = '<div class="alert alert-error"><i class="fas fa-times-circle"></i> Incorrect password!</div>';
+      }
+    }
+
+    function showAdminPanel() {
+      updateStats();
+      document.getElementById('adminPanelModal').style.display = 'flex';
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('adminPanelModal').style.display = 'none';
+    }
 
     async function exportCSV() {
       let registrations = [];
